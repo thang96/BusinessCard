@@ -1,0 +1,18 @@
+export default {
+  Black: 'rgb(0,0,0)',
+  White: 'rgb(255,255,255)',
+  Red: 'rgb(255,0,0)',
+  Lime: 'rgb(0,255,0)',
+  Blue: 'rgb(0,0,255)',
+  Yellow: 'rgb(255,255,0)',
+  Aqua: 'rgb(0,255,255)',
+  Mageta: 'rgb(255,0,255)',
+  Silver: 'rgb(192,192,192)',
+  Gray: 'rgb(128,128,128)',
+  Maroon: 'rgb(128,0,0)',
+  Olive: 'rgb(128,128,0)',
+  Green: 'rgb(0,128,0)',
+  Purple: 'rgb(128,0,128)',
+  Teal: 'rgb(0,128,128)',
+  Navy: 'rgb(0,0,128)',
+};
