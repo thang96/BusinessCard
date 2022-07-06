@@ -30,32 +30,50 @@ const FONT_SIZES = Array.from(new Array(62)).map((_, index) => ({
 }));
 
 const EditTextinputStyles = props => {
-  // const [modalVisible, setModalVisible] = useState(true);
-  const [colorText, setcolorText] = useState('black');
+  const [colorText, setcolorText] = useState(null);
   const [text, setText] = useState('');
   const [selectedBold, setSelectedBold] = useState(false);
   const [selectedItalic, setSelectedItalic] = useState(false);
-  const navigation = useNavigation();
-  const [fontFamily, setFontFamily] = useState('');
-  const [fontSize, setFontSize] = useState(40);
+  const [fontFamily, setFontFamily] = useState(null);
+  const [fontSize, setFontSize] = useState(30);
   const [isChoosingFont, setIsChoosingFont] = useState(false);
   const [isChoosingSize, setIsChoosingSize] = useState(false);
   const [colors, setColors] = useState(null);
-  const colorStore = useSelector(state => state.color.colorStore);
-  const dispatch = useDispatch();
+  const [index, setIndex] = useState(null);
+  const [height, setHeight] = useState(null);
+  const [id, setId] = useState(null);
+  const [rotate, setRotate] = useState(null);
+  const [type, setType] = useState(null);
+  const [width, setWidth] = useState(null);
+  const [x, setX] = useState(null);
+  const [y, setY] = useState(null);
 
+  const colorStore = useSelector(state => state.color.colorStore);
+
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
   const route = useRoute();
 
-  console.log(route?.params, 'route');
-  console.log(route?.params?.params?.index, 'route');
+  console.log(route.params?.params);
 
   useEffect(() => {
-    setColors(colorStore);
+    setSelectedBold(route?.params?.params?.bold);
+    setcolorText(route?.params?.params?.colorIcon);
     setFontFamily(route?.params?.params?.fontfamily);
-    setText(route?.params?.params?.value);
-    setcolorText(route?.params?.params?.color);
     setFontSize(route?.params?.params?.fontsize);
-  }, [colorStore]);
+    setHeight(route?.params?.params?.height);
+    setId(route?.params?.params?.id);
+    setIndex(route?.params?.params?.index);
+    setSelectedItalic(route?.params?.params?.italic);
+    setRotate(route?.params?.params?.rotate);
+    setType(route?.params?.params?.type);
+    setText(route?.params?.params?.value);
+    setWidth(route?.params?.params?.width);
+    setX(route?.params?.params?.x);
+    setY(route?.params?.params?.y);
+
+    setColors(colorStore);
+  }, [colorStore, route]);
   const changeColor = item => {
     setcolorText(item.value);
   };
@@ -207,18 +225,18 @@ const EditTextinputStyles = props => {
             const newResource = {
               type: 'text',
               value: text,
-              x: route?.params?.params?.x,
-              y: route?.params?.params?.y,
-              width: route?.params?.params?.width,
-              height: route?.params?.params?.height,
-              color: colorText,
-              fontfamily: fontFamily === '' ? null : fontFamily,
+              x: x,
+              y: y,
+              width: width,
+              height: height,
+              colorIcon: colorText,
+              fontfamily: fontFamily,
               fontsize: fontSize,
               bold: selectedBold,
               italic: selectedItalic,
+              id: id,
             };
-            console.log(newResource, 'resource');
-            dispatch(updateResource(route?.params?.params?.index, newResource));
+            dispatch(updateResource({index, newResource}));
             navigation.goBack();
           }}
         />

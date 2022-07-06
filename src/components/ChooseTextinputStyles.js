@@ -16,16 +16,10 @@ import CustomInput from './CustomInput';
 import Picker from './Picker';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
-import {State} from 'react-native-gesture-handler';
-import {
-  addResource,
-  updateResource,
-  removeResource,
-} from '../redux/features/resourceSlice';
-import {PickerFontFamily} from './PickerFontFamily';
-import {PickerFontSize} from './PickerFontSize';
+import {addResource} from '../redux/features/resourceSlice';
 import fontfamily from '../constants/fontfamily';
 import CustomPicker from './CustomPicker';
+import {uuid} from '../utilies';
 
 const FONT_SIZES = Array.from(new Array(62)).map((_, index) => ({
   label: index + 8,
@@ -203,11 +197,13 @@ const ChooseTextinputStyles = props => {
               y: 0,
               width: 100,
               height: 100,
-              color: colorText,
+              colorIcon: colorText,
               fontfamily: fontFamily === '' ? null : fontFamily,
               fontsize: fontSize,
               bold: selectedBold,
               italic: selectedItalic,
+              id: uuid(),
+              rotate: 0,
             };
             dispatch(addResource(newResource));
             navigation.goBack();

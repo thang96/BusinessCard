@@ -32,18 +32,21 @@ function PanAndPinch(props) {
     y,
     limitationHeight,
     limitationWidth,
-    height = 100,
-    width = 100,
+    height,
+    width,
     minHeight = height / 2,
     minWidth = width / 2,
     onDragEnd,
     onResizeEnd,
+    onRotateEnd,
     children,
     resizerImageSource = require('../assets/icons/resize.png'),
     closeImageSource = require('../assets/icons/close.png'),
+    rotateImageSource = require('../assets/icons/rotation.png'),
     style,
     isSelected,
     onRemove,
+    rotate,
   } = props;
   const xRef = useRef(x);
   const yRef = useRef(y);
@@ -53,12 +56,16 @@ function PanAndPinch(props) {
   const boxY = useSharedValue(0);
   const boxHeight = useSharedValue(heightRef.current ?? 100);
   const boxWidth = useSharedValue(widthRef.current ?? 100);
-  const boxRotate = useSharedValue(0);
+  const rotation = useSharedValue(0);
+  const savedRotation = useSharedValue(0);
 
   useEffect(() => {
     boxX.value = withTiming(xRef.current);
     boxY.value = withTiming(yRef.current);
   }, [boxX, boxY]);
+  useEffect(() => {
+    savedRotation.value = (rotate * Math.PI) / 180;
+  }, [rotate]);
 
   const gestureHandler = useAnimatedGestureHandler({
     onStart: (_ev, ctx) => {
@@ -71,13 +78,13 @@ function PanAndPinch(props) {
       }
       boxX.value = clamp(
         ctx.offsetX + ev.translationX,
-        0,
-        limitationWidth - boxWidth.value,
+        -boxWidth.value / 2,
+        limitationWidth - boxWidth.value / 2,
       );
       boxY.value = clamp(
         ctx.offsetY + ev.translationY,
-        0,
-        limitationHeight - boxHeight.value,
+        -boxHeight.value / 2,
+        limitationHeight - boxHeight.value / 2,
       );
     },
     onFinish: () => {
@@ -87,17 +94,15 @@ function PanAndPinch(props) {
           y: boxY.value,
           height: boxHeight.value,
           width: boxWidth.value,
+          rotate: rotation.value,
         });
       }
     },
   });
-
   const resizeHandler = useAnimatedGestureHandler({
     onStart: (_ev, ctx) => {
       ctx.boxWidth = boxWidth.value;
       ctx.boxHeight = boxHeight.value;
-      ctx.offsetX = boxX.value;
-      ctx.offsetY = boxY.value;
     },
     onActive: (ev, ctx) => {
       if (!isSelected) {
@@ -122,7 +127,32 @@ function PanAndPinch(props) {
           y: boxY.value,
           height: boxHeight.value,
           width: boxWidth.value,
+          rotate: rotation.value,
         });
+      }
+    },
+  });
+  const rotateHandler = useAnimatedGestureHandler({
+    onStart: (_ev, ctx) => {
+      ctx.rotate = rotation.value;
+    },
+    onActive: (ev, ctx) => {
+      if (!isSelected) {
+        return;
+      }
+      rotation.value = savedRotation.value + ev.rotation;
+    },
+    onFinish: () => {
+      'worklet';
+      if (onRotateEnd) {
+        runOnJS(onRotateEnd)({
+          x: boxX.value,
+          y: boxY.value,
+          height: boxHeight.value,
+          width: boxWidth.value,
+          rotate: rotation.value,
+        });
+        // console.log(rotation.value, 'rotate------');
       }
     },
   });
@@ -135,12 +165,12 @@ function PanAndPinch(props) {
       {
         translateY: boxY.value,
       },
+      // {rotate: `${(rotation.value * 180) / Math.PI}deg`},
+      {rotateZ: `${rotation.value}rad`},
     ],
     height: boxHeight.value,
     width: boxWidth.value,
     position: 'absolute',
-    borderWidth: 2,
-    borderColor: 'red',
     flexDirection: 'row',
   }));
 
@@ -148,6 +178,13 @@ function PanAndPinch(props) {
     () =>
       StyleSheet.create({
         closeBoxStyle: {
+          position: 'absolute',
+          zIndex: 20,
+          elevation: 20,
+          right: -5,
+          top: 0,
+        },
+        rotateBoxStyle: {
           position: 'absolute',
           zIndex: 20,
           elevation: 20,
@@ -160,6 +197,7 @@ function PanAndPinch(props) {
           elevation: 20,
           right: -10,
           bottom: -10,
+          transform: [{scale: 1}],
         },
         imageStyle: {
           height: 20,
@@ -172,37 +210,47 @@ function PanAndPinch(props) {
     <>
       <GestureHandlerRootView>
         <PanGestureHandler onGestureEvent={gestureHandler}>
-          <Animated.View style={[animatedStyle, style]}>
-            {isSelected && (
-              <View
-                style={[styles.closeBoxStyle, {width: width, height: height}]}>
-                <View
-                  style={[
-                    styless.eachViewContainer,
-                    {width: width, height: height},
-                  ]}>
-                  <TouchableOpacity onPress={onRemove} style={styless.close}>
-                    <Image
-                      source={closeImageSource}
-                      style={styles.imageStyle}
-                      resizeMode={'contain'}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
-            {isSelected && (
-              <PanGestureHandler onGestureEvent={resizeHandler}>
-                <Animated.View style={[styles.resizeBoxStyle]}>
-                  <Image
-                    source={resizerImageSource}
-                    style={styles.imageStyle}
-                    resizeMode={'contain'}
-                  />
-                </Animated.View>
-              </PanGestureHandler>
-            )}
-            {children}
+          <Animated.View>
+            <RotationGestureHandler onGestureEvent={rotateHandler}>
+              <Animated.View style={[animatedStyle, style]}>
+                {isSelected && (
+                  <View
+                    style={[
+                      styles.closeBoxStyle,
+                      {width: width, height: height},
+                    ]}>
+                    <View
+                      style={[
+                        styless.eachViewContainer,
+                        {width: width, height: height},
+                      ]}>
+                      <TouchableOpacity
+                        onPress={onRemove}
+                        style={styless.close}>
+                        <Image
+                          source={closeImageSource}
+                          style={styles.imageStyle}
+                          resizeMode={'contain'}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+                {isSelected && (
+                  <PanGestureHandler onGestureEvent={resizeHandler}>
+                    <Animated.View style={[styles.resizeBoxStyle]}>
+                      <Image
+                        source={resizerImageSource}
+                        style={styles.imageStyle}
+                        resizeMode={'contain'}
+                      />
+                    </Animated.View>
+                  </PanGestureHandler>
+                )}
+
+                {children}
+              </Animated.View>
+            </RotationGestureHandler>
           </Animated.View>
         </PanGestureHandler>
       </GestureHandlerRootView>

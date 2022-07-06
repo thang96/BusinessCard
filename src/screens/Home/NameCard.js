@@ -3,86 +3,97 @@ import React, {useEffect, useState, useRef} from 'react';
 import {
   SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
   FlatList,
   Image,
-  Modal,
   TouchableOpacity,
-  TextInput,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
 } from 'react-native';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import Orientation from 'react-native-orientation-locker';
-import {icons} from '../../constants';
+import {icons, svgimages} from '../../constants';
 import PanAndPinch from '../../components/PanAndPinch';
-import ChooseTextinputStyles from '../../components/ChooseTextinputStyles';
-import Picker from '../../components/Picker';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {
-  updateIcon,
-  removeIcon,
   updateResource,
   removeResource,
   addResource,
-} from '../../redux/actions/IconAction';
-import {transform} from '@babel/core';
-const DATA = [
-  {
-    icon: 'https://static.vecteezy.com/system/resources/previews/000/571/419/original/vector-network-icon.jpg',
-    id: 1,
-  },
-  {
-    icon: 'https://static.vecteezy.com/system/resources/previews/000/551/599/original/user-icon-vector.jpg',
-    id: 2,
-  },
-  {
-    icon: 'https://static.vecteezy.com/system/resources/previews/000/150/752/original/free-update-icon-vector-collection.jpg',
-    id: 3,
-  },
-  {
-    icon: 'https://tse4.mm.bing.net/th?id=OIP.bwb4tI2v-svBFxB_fZcoVQHaJ4&pid=Api&P=0&w=126&h=168',
-    id: 4,
-  },
-  {
-    icon: 'https://tse3.mm.bing.net/th?id=OIP.xOwGC3MnX56NFDLncE8MAgHaHa&pid=Api&P=0&w=165&h=165',
-    id: 5,
-  },
-  {
-    icon: 'https://static.vecteezy.com/system/resources/previews/000/435/774/original/vector-direction-icon.jpg',
-    id: 6,
-  },
-  {
-    icon: 'https://tse4.mm.bing.net/th?id=OIP.AXk-fYRwU3FTAHV5SCLl5wHaFg&pid=Api&P=0&w=213&h=158',
-    id: 7,
-  },
-  {
-    icon: 'https://tse2.mm.bing.net/th?id=OIP.qlO8Doemk0ret1fCjjnf5wHaHa&pid=Api&P=0&w=183&h=183',
-    id: 8,
-  },
-];
-
+} from '../../redux/features/resourceSlice';
+import {uuid} from '../../utilies';
 const NameCard = () => {
   const [limitationHeight, setLimitationHeight] = useState(0);
   const [limitationWidth, setLimitationWidth] = useState(0);
-  const [resizable, setResizable] = useState(false);
-  const [draggable, setdDaggable] = useState(false);
-
-  const [data, setData] = useState(DATA);
-
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [selectedItemIndex, setSelectedItemIndex] = useState(null);
+  const [size, setSize] = useState({width: 100, height: 100});
   const dispatch = useDispatch();
-  // const icon = useSelector(state => state?.Icon?.icon);
-
-  const resources = useSelector(state => state?.Icon?.resources ?? []);
-  // useEffect(() => {
-  //   setData(DATA);
-  // }, [data, icon]);
-
-  const onAddNewItem = item => {
+  const resources = useSelector(state => state.resource.resourceStore ?? []);
+  console.log(resources);
+  const color = useSelector(state => state.color.colorStore ?? []);
+  const FUNCTIONBUTTON = [
+    {title: 'Choose theme', onPress: null},
+    {title: 'Add color', onPress: () => navigation.navigate('CreateColor')},
+    {
+      title: 'Add text',
+      onPress: () => navigation.navigate('ChooseTextinputStyles'),
+    },
+    {
+      title: 'Edit text',
+      onPress: () => {
+        resources.map(
+          (
+            {
+              bold,
+              colorIcon,
+              fontfamily,
+              fontsize,
+              height,
+              id,
+              italic,
+              rotate,
+              type,
+              value,
+              width,
+              x,
+              y,
+            },
+            index,
+          ) => {
+            if (index === selectedIndex && type === 'text') {
+              navigation.navigate('EditTextinputStyles', {
+                params: {
+                  bold: bold,
+                  colorIcon: colorIcon,
+                  fontfamily: fontfamily,
+                  fontsize: fontsize,
+                  height: height,
+                  id: id,
+                  italic: italic,
+                  rotate: rotate,
+                  type: type,
+                  value: value,
+                  width: width,
+                  x: x,
+                  y: y,
+                  index: index,
+                },
+              });
+            }
+          },
+        );
+      },
+    },
+  ];
+  const renderColor = ({item, index}) => (
+    <TouchableOpacity
+      key={item.value}
+      onPress={() => updateColor(item.value)}
+      style={[styles.eachViewColor, {backgroundColor: item?.value}]}
+    />
+  );
+  const onAddNewItem = (item, index) => {
     let NewItem = {
       type: 'image',
       value: item,
@@ -90,101 +101,119 @@ const NameCard = () => {
       y: 0,
       height: 100,
       width: 100,
+      rotate: 0,
+      colorIcon: 'rgb(0,0,0)',
+      id: uuid(),
     };
     dispatch(addResource(NewItem));
   };
-
-  const [selectedIndex, setSelectedIndex] = useState(null);
-
   const onTogglePressed = index => {
     return () => {
-      setSelectedIndex(prevIndex => (prevIndex === index ? null : index));
-      setResizable(!resizable);
-      setdDaggable(!draggable);
+      setSelectedIndex(prevIndex => (prevIndex == index ? null : index));
+      setSelectedItemIndex(index);
     };
   };
-  const onRemove = index => {
+  const onRemove = id => {
     return () => {
-      dispatch(removeResource(index));
+      dispatch(removeResource(id));
     };
   };
-
-  const [kt, setKT] = useState({width: 100, height: 100});
-
-  useEffect(() => {
-    Orientation.lockToLandscape();
-  });
+  const renderButton = item => (
+    <TouchableOpacity onPress={item.onPress} style={styles.buttonTopTab}>
+      <Text style={styles.textTopTab}>{item.title}</Text>
+    </TouchableOpacity>
+  );
+  const updateColor = colorSelected => {
+    const index = selectedItemIndex;
+    const _boxArray = [...resources];
+    const itembox = {
+      ..._boxArray[selectedItemIndex],
+      x: _boxArray[selectedItemIndex].x,
+      y: _boxArray[selectedItemIndex].y,
+      height: _boxArray[selectedItemIndex].height,
+      width: _boxArray[selectedItemIndex].width,
+      colorIcon: colorSelected,
+    };
+    dispatch(updateResource({index, itembox}));
+  };
   const navigation = useNavigation();
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.container}>
-        <View style={styles.viewTitle}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('Svg');
-            }}
-            style={styles.addTitle}>
-            <Text>Chọn chủ đề</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ChooseTextinputStyles');
-            }}
-            style={styles.addText}>
-            <Text>Thêm text</Text>
-          </TouchableOpacity>
-        </View>
+    <>
+      <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView style={styles.container}>
+          <View style={styles.viewTopTab}>
+            {
+              <FlatList
+                horizontal
+                data={FUNCTIONBUTTON}
+                keyExtractor={key => key.title}
+                renderItem={({item}) => renderButton(item)}
+              />
+            }
+            <View style={{flex: 1}} />
 
-        <View style={{flex: 1, flexDirection: 'row'}}>
-          <View style={styles.viewItem}>
-            <FlatList
-              data={data}
-              keyExtractor={key => key.icon}
-              renderItem={({item, index}) => (
-                <TouchableOpacity
-                  onPress={() => {
-                    onAddNewItem(item.icon);
-                  }}
-                  style={styles.eachViewItem}>
-                  <Image
-                    style={{width: '100%', height: '100%'}}
-                    resizeMode="stretch"
-                    source={{uri: item.icon}}></Image>
-                </TouchableOpacity>
-              )}
-            />
+            <TouchableOpacity style={styles.saveButton}>
+              <Image
+                style={{width: 20, height: 20, tintColor: 'rgb(0,0,225)'}}
+                source={icons.savefile}
+              />
+            </TouchableOpacity>
           </View>
-          <View style={styles.eachView}>
+          <View style={{flex: 1, flexDirection: 'row'}}>
+            <View style={styles.listIcon}>
+              <ScrollView style={styles.viewItem}>
+                {Object.values(svgimages).map((IconItem, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => {
+                      onAddNewItem(IconItem, index);
+                    }}
+                    style={styles.eachViewItem}>
+                    <IconItem
+                      width={'100%'}
+                      height={'100%'}
+                      fill="rgb(0,0,0)"
+                    />
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+              <View style={styles.viewColor}>
+                <FlatList
+                  data={color}
+                  keyExtractor={key => key.name}
+                  renderItem={renderColor}
+                />
+              </View>
+            </View>
             <View
-              style={{
-                height: '100%',
-                padding: 15,
-              }}>
-              <View
-                onLayout={ev => {
-                  const layout = ev.nativeEvent.layout;
-                  setLimitationHeight(layout.height);
-                  setLimitationWidth(layout.width);
-                }}
-                style={styles.viewCard}>
-                {resources.map(
-                  (
-                    {
-                      width,
-                      height,
-                      type,
-                      x,
-                      y,
-                      value,
-                      color,
-                      fontfamily,
-                      fontsize,
-                      bold,
-                      italic,
-                    },
-                    index,
-                  ) => (
-                    <View key={index}>
+              onLayout={ev => {
+                const layout = ev.nativeEvent.layout;
+                setLimitationHeight(layout.height);
+                setLimitationWidth(layout.width);
+              }}
+              style={{flex: 1}}>
+              {resources.map(
+                (
+                  {
+                    width,
+                    height,
+                    type,
+                    x,
+                    y,
+                    value,
+                    fontfamily,
+                    fontsize,
+                    bold,
+                    italic,
+                    colorIcon,
+                    id,
+                    rotate,
+                  },
+                  index,
+                ) => {
+                  const IconItem = value;
+                  return (
+                    <View key={id}>
                       {type === 'image' ? (
                         <PanAndPinch
                           isSelected={index === selectedIndex}
@@ -192,59 +221,82 @@ const NameCard = () => {
                             borderWidth: selectedIndex == index ? 2 : 0,
                             borderColor: 'rgb(0,255,255)',
                           }}
-                          key={index}
+                          key={id}
                           height={height}
                           width={width}
                           x={x}
                           y={y}
+                          rotate={rotate}
                           limitationHeight={limitationHeight}
                           limitationWidth={limitationWidth}
-                          onRemove={onRemove(index)}
+                          onRemove={onRemove(id)}
                           onDragEnd={boxPosition => {
                             const _boxArray = [...resources];
-
-                            const _box = {
+                            const itembox = {
                               ..._boxArray[index],
                               x: boxPosition.x,
                               y: boxPosition.y,
                               height: boxPosition.height,
                               width: boxPosition.width,
+                              rotate: (boxPosition.rotate * 180) / Math.PI,
+                              id: id,
                             };
-
-                            dispatch(updateResource(index, _box));
+                            dispatch(updateResource({index, itembox}));
                           }}
                           onResizeEnd={boxPosition => {
                             const _boxArray = [...resources];
-                            const _box = {
+                            const itembox = {
                               ..._boxArray[index],
                               x: boxPosition.x,
                               y: boxPosition.y,
                               height: boxPosition.height,
                               width: boxPosition.width,
+                              rotate: (boxPosition.rotate * 180) / Math.PI,
+                              id: id,
                             };
-                            setKT({
+                            setSize({
                               width: boxPosition.width,
                               height: boxPosition.width,
                             });
 
-                            dispatch(updateResource(index, _box));
+                            dispatch(updateResource({index, itembox}));
+                          }}
+                          onRotateEnd={boxPosition => {
+                            const _boxArray = [...resources];
+                            const itembox = {
+                              ..._boxArray[index],
+                              x: boxPosition.x,
+                              y: boxPosition.y,
+                              height: boxPosition.height,
+                              width: boxPosition.width,
+                              rotate: (boxPosition.rotate * 180) / Math.PI,
+                              id: id,
+                            };
+                            dispatch(updateResource({index, itembox}));
                           }}>
                           <TouchableWithoutFeedback
                             style={[StyleSheet.absoluteFill]}
                             onPress={onTogglePressed(index)}>
                             <View
                               style={[
-                                {width: kt.width, height: kt.height},
-                                // {transform: [{rotate: '45deg'}]},
+                                {
+                                  width: size.width,
+                                  height: size.height,
+                                },
                               ]}>
-                              <Image
-                                resizeMode="cover"
-                                style={{
-                                  width: resources[index].width - 4,
-                                  height: resources[index].height - 4,
-                                }}
-                                source={{uri: value}}
-                              />
+                              {typeof value === 'string' ? (
+                                <SvgUri
+                                  width="100%"
+                                  height="100%"
+                                  uri="http://thenewcode.com/assets/images/thumbnails/homer-simpson.svg"
+                                />
+                              ) : (
+                                <IconItem
+                                  fill={colorIcon}
+                                  width={resources[index].width - 4}
+                                  height={resources[index].height - 4}
+                                />
+                              )}
                             </View>
                           </TouchableWithoutFeedback>
                         </PanAndPinch>
@@ -255,14 +307,15 @@ const NameCard = () => {
                             borderWidth: selectedIndex == index ? 2 : 0,
                             borderColor: 'rgb(0,255,255)',
                           }}
-                          key={index}
+                          key={id}
                           height={height}
                           width={width}
                           x={x}
                           y={y}
+                          rotate={rotate}
                           limitationHeight={limitationHeight}
                           limitationWidth={limitationWidth}
-                          onRemove={onRemove(index)}
+                          onRemove={onRemove(id)}
                           onDragEnd={boxPosition => {
                             const _boxArray = [...resources];
 
@@ -272,6 +325,8 @@ const NameCard = () => {
                               y: boxPosition.y,
                               height: boxPosition.height,
                               width: boxPosition.width,
+                              rotate: (boxPosition.rotate * 180) / Math.PI,
+                              id: id,
                             };
 
                             dispatch(updateResource(index, _box));
@@ -284,24 +339,38 @@ const NameCard = () => {
                               y: boxPosition.y,
                               height: boxPosition.height,
                               width: boxPosition.width,
+                              id: id,
                             };
-                            setKT({
+                            setSize({
                               width: boxPosition.width,
                               height: boxPosition.width,
                             });
 
                             dispatch(updateResource(index, _box));
+                          }}
+                          onRotateEnd={boxPosition => {
+                            const _boxArray = [...resources];
+                            const itembox = {
+                              ..._boxArray[index],
+                              x: boxPosition.x,
+                              y: boxPosition.y,
+                              height: boxPosition.height,
+                              width: boxPosition.width,
+                              rotate: (boxPosition.rotate * 180) / Math.PI,
+                              id: id,
+                            };
+                            dispatch(updateResource({index, itembox}));
                           }}>
                           <TouchableWithoutFeedback
                             style={[StyleSheet.absoluteFill, {padding: 10}]}
                             onPress={onTogglePressed(index)}>
                             <View
                               style={() => {
-                                return {width: kt.width, height: kt.height};
+                                return {width: size.width, height: size.height};
                               }}>
                               <Text
                                 style={{
-                                  color: color,
+                                  color: colorIcon,
                                   fontFamily: fontfamily,
                                   fontSize: fontsize,
                                   fontStyle: italic ? 'italic' : 'normal',
@@ -314,32 +383,52 @@ const NameCard = () => {
                         </PanAndPinch>
                       ) : null}
                     </View>
-                  ),
-                )}
-              </View>
+                  );
+                },
+              )}
             </View>
           </View>
-        </View>
-      </View>
-    </SafeAreaView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: 'rgb(169, 169, 169)',
-  },
-  viewTitle: {
-    width: '100%',
+  container: {flex: 1, backgroundColor: 'white'},
+  viewTopTab: {
     height: '15%',
-    backgroundColor: 'rgb(0,255,255)',
+    zIndex: 9999,
+    backgroundColor: 'rgb(207,207,207)',
     flexDirection: 'row',
+    alignItems: 'center',
+  },
+  saveButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 45,
+    height: 45,
+    borderWidth: 2,
+    borderRadius: 5,
+    borderColor: 'rgb(0,0,225)',
+  },
+  buttonTopTab: {
+    height: 45,
+    width: 150,
+    marginRight: 15,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 1,
+  },
+  textTopTab: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: 'rgba(0,0,0,0.5)',
   },
   viewItem: {
-    backgroundColor: 'rgb(0,255,255)',
-    width: '25%',
+    backgroundColor: 'rgb(207,207,207)',
+    width: '70%',
     height: '100%',
   },
   eachViewItem: {
@@ -350,28 +439,26 @@ const styles = StyleSheet.create({
     height: 150,
     backgroundColor: 'white',
     borderRadius: 10,
+    padding: 5,
   },
-  eachView: {flex: 1},
-
-  viewCard: {flex: 1, backgroundColor: 'white'},
-  addText: {
+  viewColor: {
+    backgroundColor: 'rgb(207,207,207)',
+    width: '30%',
+    height: '100%',
+  },
+  eachViewColor: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#00CCFF',
-    marginHorizontal: 5,
-    marginVertical: 2,
-    width: 150,
-    borderRadius: 10,
+    margin: 3,
+    width: 60,
+    height: 60,
+    borderRadius: 60,
   },
-  addTitle: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#00CCFF',
-    marginHorizontal: 5,
-    marginVertical: 2,
-    width: 180,
-    borderRadius: 10,
+  listIcon: {
+    width: '33%',
+    backgroundColor: 'rgb(245,245,245)',
+    zIndex: 9999,
+    flexDirection: 'row',
   },
 });
-
 export default NameCard;

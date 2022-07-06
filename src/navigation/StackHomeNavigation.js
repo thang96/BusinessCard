@@ -11,7 +11,7 @@ const Stack = createNativeStackNavigator();
 
 const StackRegisterNavigation = () => {
   return (
-    <Stack.Navigator initialRouteName="BusinessCardDesign">
+    <Stack.Navigator initialRouteName="NameCard">
       <Stack.Screen
         options={{
           headerShown: false,

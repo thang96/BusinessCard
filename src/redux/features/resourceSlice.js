@@ -13,7 +13,6 @@ export const resourceStoreSlice = createSlice({
       // state.colorStore = [...current(state.colorStore), actions.payload];
     },
     updateResource: (state, actions) => {
-      console.log(actions.payload);
       const newResource = [...current(state.resourceStore)];
       newResource[actions.payload.index] = actions.payload.itembox;
       state.resourceStore = newResource;
