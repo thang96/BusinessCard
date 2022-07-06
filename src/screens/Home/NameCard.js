@@ -86,14 +86,14 @@ const NameCard = () => {
       },
     },
   ];
-  const renderColor = ({item, index}) => (
+  const renderColor = ({item}) => (
     <TouchableOpacity
       key={item.value}
       onPress={() => updateColor(item.value)}
       style={[styles.eachViewColor, {backgroundColor: item?.value}]}
     />
   );
-  const onAddNewItem = (item, index) => {
+  const onAddNewItem = item => {
     let NewItem = {
       type: 'image',
       value: item,

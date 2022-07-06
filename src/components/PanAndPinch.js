@@ -71,6 +71,9 @@ function PanAndPinch(props) {
     onStart: (_ev, ctx) => {
       ctx.offsetX = boxX.value;
       ctx.offsetY = boxY.value;
+      ctx.boxWidth = boxWidth.value;
+      ctx.boxHeight = boxHeight.value;
+      ctx.rotate = rotation.value;
     },
     onActive: (ev, ctx) => {
       if (!isSelected) {
@@ -101,8 +104,11 @@ function PanAndPinch(props) {
   });
   const resizeHandler = useAnimatedGestureHandler({
     onStart: (_ev, ctx) => {
+      ctx.offsetX = boxX.value;
+      ctx.offsetY = boxY.value;
       ctx.boxWidth = boxWidth.value;
       ctx.boxHeight = boxHeight.value;
+      ctx.rotate = rotation.value;
     },
     onActive: (ev, ctx) => {
       if (!isSelected) {
@@ -134,6 +140,10 @@ function PanAndPinch(props) {
   });
   const rotateHandler = useAnimatedGestureHandler({
     onStart: (_ev, ctx) => {
+      ctx.offsetX = boxX.value;
+      ctx.offsetY = boxY.value;
+      ctx.boxWidth = boxWidth.value;
+      ctx.boxHeight = boxHeight.value;
       ctx.rotate = rotation.value;
     },
     onActive: (ev, ctx) => {

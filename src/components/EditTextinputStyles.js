@@ -4,22 +4,15 @@ import {
   Image,
   Text,
   TouchableOpacity,
-  Modal,
   StyleSheet,
   FlatList,
-  Dimensions,
 } from 'react-native';
 import {icons, colos} from '../constants';
-import Orientation from 'react-native-orientation-locker';
 import CustomButton from './CustomButton';
 import CustomInput from './CustomInput';
-import Picker from './Picker';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
-import {State} from 'react-native-gesture-handler';
 import {addNewColor} from '../redux/features/colorSlice';
-import {PickerFontFamily} from './PickerFontFamily';
-import {PickerFontSize} from './PickerFontSize';
 import fontfamily from '../constants/fontfamily';
 import CustomPicker from './CustomPicker';
 import {updateResource} from '../redux/features/resourceSlice';
@@ -30,7 +23,7 @@ const FONT_SIZES = Array.from(new Array(62)).map((_, index) => ({
 }));
 
 const EditTextinputStyles = props => {
-  const [colorText, setcolorText] = useState(null);
+  const [colorText, setcolorText] = useState('black');
   const [text, setText] = useState('');
   const [selectedBold, setSelectedBold] = useState(false);
   const [selectedItalic, setSelectedItalic] = useState(false);
@@ -40,13 +33,6 @@ const EditTextinputStyles = props => {
   const [isChoosingSize, setIsChoosingSize] = useState(false);
   const [colors, setColors] = useState(null);
   const [index, setIndex] = useState(null);
-  const [height, setHeight] = useState(null);
-  const [id, setId] = useState(null);
-  const [rotate, setRotate] = useState(null);
-  const [type, setType] = useState(null);
-  const [width, setWidth] = useState(null);
-  const [x, setX] = useState(null);
-  const [y, setY] = useState(null);
 
   const colorStore = useSelector(state => state.color.colorStore);
 
@@ -54,23 +40,14 @@ const EditTextinputStyles = props => {
   const navigation = useNavigation();
   const route = useRoute();
 
-  console.log(route.params?.params);
-
   useEffect(() => {
     setSelectedBold(route?.params?.params?.bold);
     setcolorText(route?.params?.params?.colorIcon);
     setFontFamily(route?.params?.params?.fontfamily);
     setFontSize(route?.params?.params?.fontsize);
-    setHeight(route?.params?.params?.height);
-    setId(route?.params?.params?.id);
     setIndex(route?.params?.params?.index);
     setSelectedItalic(route?.params?.params?.italic);
-    setRotate(route?.params?.params?.rotate);
-    setType(route?.params?.params?.type);
     setText(route?.params?.params?.value);
-    setWidth(route?.params?.params?.width);
-    setX(route?.params?.params?.x);
-    setY(route?.params?.params?.y);
 
     setColors(colorStore);
   }, [colorStore, route]);
@@ -132,17 +109,7 @@ const EditTextinputStyles = props => {
           <View style={styles.viewPropDownRow}>
             <TouchableOpacity
               onPress={onToggleChoosingSize}
-              style={{
-                height: 50,
-                borderWidth: 1,
-                borderColor: 'rgb(112,112,112)',
-                borderRadius: 5,
-                width: 110,
-                alignItems: 'center',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingHorizontal: 5,
-              }}>
+              style={styles.toggleChoosingSize}>
               <Text style={{color: 'black'}}>{fontSize}</Text>
               <Image style={{width: 20, height: 20}} source={icons.sortDow} />
             </TouchableOpacity>
@@ -222,21 +189,22 @@ const EditTextinputStyles = props => {
           style={styles.viewEdit}
           backgroundColor={text.trim() == '' ? 'grey' : 'rgb(0,255,255)'}
           onPress={() => {
-            const newResource = {
+            const itembox = {
               type: 'text',
+              x: route?.params?.params?.x,
+              y: route?.params?.params?.y,
+              width: route?.params?.params?.width,
+              height: route?.params?.params?.height,
+              rotate: route?.params?.params?.rotate,
+              id: route?.params?.params?.id,
               value: text,
-              x: x,
-              y: y,
-              width: width,
-              height: height,
               colorIcon: colorText,
               fontfamily: fontFamily,
               fontsize: fontSize,
               bold: selectedBold,
               italic: selectedItalic,
-              id: id,
             };
-            dispatch(updateResource({index, newResource}));
+            dispatch(updateResource({index, itembox}));
             navigation.goBack();
           }}
         />
@@ -367,6 +335,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(125,146,125,3)',
     height: 90,
     marginHorizontal: 5,
+  },
+  toggleChoosingSize: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: 'rgb(112,112,112)',
+    borderRadius: 5,
+    width: 110,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 5,
   },
 });
 
