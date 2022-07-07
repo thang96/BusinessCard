@@ -30,7 +30,7 @@ const NameCard = () => {
   const [size, setSize] = useState({width: 100, height: 100});
   const dispatch = useDispatch();
   const resources = useSelector(state => state.resource.resourceStore ?? []);
-  console.log(resources);
+  // console.log(resources);
   const color = useSelector(state => state.color.colorStore ?? []);
   const FUNCTIONBUTTON = [
     {title: 'Choose theme', onPress: null},
@@ -275,6 +275,9 @@ const NameCard = () => {
                             dispatch(updateResource({index, itembox}));
                           }}>
                           <TouchableWithoutFeedback
+                            //
+                            hitSlop={{x: size.width, y: size.height}}
+                            //
                             style={[StyleSheet.absoluteFill]}
                             onPress={onTogglePressed(index)}>
                             <View
@@ -362,6 +365,7 @@ const NameCard = () => {
                             dispatch(updateResource({index, itembox}));
                           }}>
                           <TouchableWithoutFeedback
+                            hitSlop={{x: size.width, y: size.height}}
                             style={[StyleSheet.absoluteFill, {padding: 10}]}
                             onPress={onTogglePressed(index)}>
                             <View
