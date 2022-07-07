@@ -35,6 +35,7 @@ const NameCard = () => {
   const color = useSelector(state => state.color.colorStore ?? []);
   useEffect(() => {
     LogBox.ignoreAllLogs();
+    console.log(1);
   }, []);
   const FUNCTIONBUTTON = [
     {title: 'Choose theme', onPress: null},
@@ -226,7 +227,7 @@ const NameCard = () => {
                         <PanAndPinch
                           isSelected={index === selectedIndex}
                           style={{
-                            borderWidth: selectedIndex == index ? 2 : 0,
+                            borderWidth: index === selectedIndex ? 2 : 0,
                             borderColor: 'rgb(0,255,255)',
                           }}
                           key={id}
@@ -289,12 +290,10 @@ const NameCard = () => {
                             style={[StyleSheet.absoluteFill]}
                             onPress={onTogglePressed(index)}>
                             <View
-                              style={[
-                                {
-                                  width: size.width,
-                                  height: size.height,
-                                },
-                              ]}>
+                              style={{
+                                width: size.width,
+                                height: size.height,
+                              }}>
                               {typeof value === 'string' ? (
                                 <SvgUri
                                   width="100%"
@@ -315,7 +314,7 @@ const NameCard = () => {
                         <PanAndPinch
                           isSelected={index === selectedIndex}
                           style={{
-                            borderWidth: selectedIndex == index ? 2 : 0,
+                            borderWidth: selectedIndex === index ? 2 : 0,
                             borderColor: 'rgb(0,255,255)',
                           }}
                           key={id}

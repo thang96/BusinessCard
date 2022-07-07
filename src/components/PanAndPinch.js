@@ -182,6 +182,8 @@ function PanAndPinch(props) {
     width: boxWidth.value,
     position: 'absolute',
     flexDirection: 'row',
+    // borderWidth: !isSelected ? 0 : 1,
+    // borderColor: 'grey',
   }));
 
   const styles = useMemo(
