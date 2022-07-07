@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
+  LogBox,
 } from 'react-native';
 import {icons, svgimages} from '../../constants';
 import PanAndPinch from '../../components/PanAndPinch';
@@ -32,6 +33,9 @@ const NameCard = () => {
   const resources = useSelector(state => state.resource.resourceStore ?? []);
   // console.log(resources);
   const color = useSelector(state => state.color.colorStore ?? []);
+  useEffect(() => {
+    LogBox.ignoreAllLogs();
+  }, []);
   const FUNCTIONBUTTON = [
     {title: 'Choose theme', onPress: null},
     {title: 'Add color', onPress: () => navigation.navigate('CreateColor')},
@@ -86,10 +90,10 @@ const NameCard = () => {
       },
     },
   ];
-  const renderColor = ({item}) => (
+  const renderColor = ({item, index}) => (
     <TouchableOpacity
       key={item.value}
-      onPress={() => updateColor(item.value)}
+      onPress={() => updateColor(item.value, index)}
       style={[styles.eachViewColor, {backgroundColor: item?.value}]}
     />
   );
@@ -124,17 +128,21 @@ const NameCard = () => {
     </TouchableOpacity>
   );
   const updateColor = colorSelected => {
-    const index = selectedItemIndex;
-    const _boxArray = [...resources];
-    const itembox = {
-      ..._boxArray[selectedItemIndex],
-      x: _boxArray[selectedItemIndex].x,
-      y: _boxArray[selectedItemIndex].y,
-      height: _boxArray[selectedItemIndex].height,
-      width: _boxArray[selectedItemIndex].width,
-      colorIcon: colorSelected,
-    };
-    dispatch(updateResource({index, itembox}));
+    if (selectedItemIndex === null) {
+      return null;
+    } else {
+      const index = selectedItemIndex;
+      const _boxArray = [...resources];
+      const itembox = {
+        ..._boxArray[selectedItemIndex],
+        x: _boxArray[selectedItemIndex].x,
+        y: _boxArray[selectedItemIndex].y,
+        height: _boxArray[selectedItemIndex].height,
+        width: _boxArray[selectedItemIndex].width,
+        colorIcon: colorSelected,
+      };
+      dispatch(updateResource({index, itembox}));
+    }
   };
   const navigation = useNavigation();
   return (
