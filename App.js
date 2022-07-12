@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 
-import {SafeAreaView, StyleSheet, StatusBar} from 'react-native';
+import {SafeAreaView, StyleSheet} from 'react-native';
 import Orientation from 'react-native-orientation-locker';
 import AppContainer from './src/screens/AppContainer';
 import {Provider} from 'react-redux';
@@ -12,7 +12,6 @@ const App = () => {
   }, []);
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar hidden />
       <GestureHandlerRootView style={styles.container}>
         <Provider store={store}>
           <AppContainer />

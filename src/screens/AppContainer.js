@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {SafeAreaView, StyleSheet} from 'react-native';
+import {SafeAreaView, StatusBar, StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {Splash} from '../screens';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -10,6 +10,7 @@ const Stack = createStackNavigator();
 const AppContainer = () => {
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar hidden />
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen

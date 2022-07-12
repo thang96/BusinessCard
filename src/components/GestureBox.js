@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useRef, useEffect} from 'react';
+import React, {Children, useMemo, useRef} from 'react';
 import {View, Image, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {
   Gesture,
@@ -33,9 +33,7 @@ const GestureBox = props => {
     style,
     isSelected,
     onRemove,
-    setXY,
   } = props;
-
   const heightRef = useRef(height);
   const widthRef = useRef(width);
   const boxHeight = useSharedValue(heightRef.current ?? 100);
@@ -58,7 +56,7 @@ const GestureBox = props => {
       width: boxWidth.value,
       position: 'absolute',
       flexDirection: 'row',
-      zIndex: isSelected ? 9999 : 1,
+      zIndex: 1,
       borderWidth: isSelected ? 1 : 0,
       borderColor: 'red',
     };
@@ -82,11 +80,13 @@ const GestureBox = props => {
         };
       }
     })
-    .onEnd((_, success) => {
-      start.value = {
-        x: offset.value.x,
-        y: offset.value.y,
-      };
+    .onEnd(() => {
+      if (isSelected) {
+        start.value = {
+          x: offset.value.x,
+          y: offset.value.y,
+        };
+      }
     });
 
   const zoomGesture = Gesture.Pinch()
@@ -99,7 +99,6 @@ const GestureBox = props => {
       if (isSelected) {
         savedScale.value = scale.value;
       }
-      console.log(scale.value, 'scale');
     });
 
   const rotateGesture = Gesture.Rotation()
@@ -112,14 +111,11 @@ const GestureBox = props => {
       if (isSelected) {
         savedRotation.value = rotation.value;
       }
-      console.log(savedRotation.value, 'Rotate');
     });
-  // const composed = Gesture.Simultaneous(
-  //   dragGesture,
-  //   Gesture.Simultaneous(zoomGesture, rotateGesture),
-  // );
-  const composed = Gesture.Race(
-    Gesture.Simultaneous(zoomGesture, dragGesture, rotateGesture),
+
+  const composed = Gesture.Simultaneous(
+    dragGesture,
+    Gesture.Simultaneous(zoomGesture, rotateGesture),
   );
   const resizeHandler = useAnimatedGestureHandler({
     onStart: (_ev, ctx) => {
@@ -181,12 +177,6 @@ const GestureBox = props => {
       }),
     [],
   );
-
-  useEffect(() => {
-    console.log('offset: ', offset);
-
-    setXY(offset);
-  }, [offset]);
 
   return (
     <>

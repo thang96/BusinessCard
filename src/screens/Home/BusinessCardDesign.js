@@ -1,46 +1,37 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState, useRef, startTransition} from 'react';
 import {
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   View,
+  FlatList,
   Image,
   TouchableOpacity,
   KeyboardAvoidingView,
-  FlatList,
-  TouchableWithoutFeedback,
+  LogBox,
 } from 'react-native';
-import GestureBox from '../../components/GestureBox';
 import {icons, svgimages} from '../../constants';
+import PanAndPinch from '../../components/PanAndPinch';
+import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {
-  addResource,
   updateResource,
   removeResource,
+  addResource,
 } from '../../redux/features/resourceSlice';
-import {useNavigation} from '@react-navigation/native';
-import {ScrollView} from 'react-native-gesture-handler';
-import Svg from 'react-native-svg';
 import {uuid} from '../../utilies';
-
-const BusinessCardDesign = () => {
-  const dispatch = useDispatch();
-  const resources = useSelector(state => state.resource.resourceStore ?? []);
-  // const resource = useSelector(state => state.resource.resourceStore);
-  //?? []
-  // const [resources, setResources] = useState([]);
-  // useEffect(() => {
-  //   updateColor();
-  // }, [resources]);
-  // console.log(resources, 'resources list');
+const NameCard = () => {
   const [limitationHeight, setLimitationHeight] = useState(0);
   const [limitationWidth, setLimitationWidth] = useState(0);
-  const navigation = useNavigation();
-  const color = useSelector(state => state.color.colorStore ?? []);
-  const [size, setSize] = useState({width: 100, height: 100});
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [colorItem, setColorItem] = useState('rgb(0,0,0)');
-
+  const [size, setSize] = useState({width: 100, height: 100});
+  const dispatch = useDispatch();
+  const resources = useSelector(state => state.resource.resourceStore ?? []);
+  const color = useSelector(state => state.color.colorStore ?? []);
+  // useEffect(() => {
+  //   LogBox.ignoreAllLogs();
+  // }, []);
   const FUNCTIONBUTTON = [
     {title: 'Choose theme', onPress: null},
     {title: 'Add color', onPress: () => navigation.navigate('CreateColor')},
@@ -54,33 +45,38 @@ const BusinessCardDesign = () => {
         resources.map(
           (
             {
-              width,
-              height,
-              type,
-              x,
-              y,
-              value,
-              color,
+              bold,
+              colorIcon,
               fontfamily,
               fontsize,
-              bold,
+              height,
+              id,
               italic,
+              rotate,
+              type,
+              value,
+              width,
+              x,
+              y,
             },
             index,
           ) => {
             if (index === selectedIndex && type === 'text') {
               navigation.navigate('EditTextinputStyles', {
                 params: {
-                  value: value,
+                  bold: bold,
+                  colorIcon: colorIcon,
                   fontfamily: fontfamily,
                   fontsize: fontsize,
-                  bold: bold,
+                  height: height,
+                  id: id,
                   italic: italic,
-                  color: color,
+                  rotate: rotate,
+                  type: type,
+                  value: value,
+                  width: width,
                   x: x,
                   y: y,
-                  width: width,
-                  height: height,
                   index: index,
                 },
               });
@@ -90,15 +86,14 @@ const BusinessCardDesign = () => {
       },
     },
   ];
-
-  const onTogglePressed = index => {
-    return () => {
-      setSelectedIndex(prevIndex => (prevIndex == index ? null : index));
-      setSelectedItemIndex(index);
-    };
-  };
-
-  const onAddNewItem = (item, index) => {
+  const renderColor = ({item, index}) => (
+    <TouchableOpacity
+      key={item.value}
+      onPress={() => updateColor(item.value, index)}
+      style={[styles.eachViewColor, {backgroundColor: item?.value}]}
+    />
+  );
+  const onAddNewItem = item => {
     let NewItem = {
       type: 'image',
       value: item,
@@ -106,62 +101,57 @@ const BusinessCardDesign = () => {
       y: 0,
       height: 100,
       width: 100,
+      rotate: 0,
       colorIcon: 'rgb(0,0,0)',
       id: uuid(),
     };
     dispatch(addResource(NewItem));
+  };
+  const onTogglePressed = index => {
+    return () => {
+      setSelectedIndex(prevIndex => (prevIndex == index ? null : index));
+    };
   };
   const onRemove = id => {
     return () => {
       dispatch(removeResource(id));
     };
   };
-
   const renderButton = item => (
     <TouchableOpacity onPress={item.onPress} style={styles.buttonTopTab}>
       <Text style={styles.textTopTab}>{item.title}</Text>
     </TouchableOpacity>
   );
-  const [selectedItemIndex, setSelectedItemIndex] = useState(null);
-  // console.log('itembox : ', selectedItemIndex, colorItem);
-  const renderColor = ({item, index}) => (
-    <TouchableOpacity
-      key={item.value}
-      onPress={() => updateColor(item.value)}
-      style={[styles.eachViewColor, {backgroundColor: item?.value}]}
-    />
-  );
   const updateColor = colorSelected => {
-    // setColorItem(item.value);
-    const index = selectedItemIndex;
-    // console.log(index, '-------------------------------------');
-    const _boxArray = [...resources];
-    const itembox = {
-      ..._boxArray[selectedItemIndex],
-      x: _boxArray[selectedItemIndex].x,
-      y: _boxArray[selectedItemIndex].y,
-      height: _boxArray[selectedItemIndex].height,
-      width: _boxArray[selectedItemIndex].width,
-      colorIcon: colorSelected,
-    };
-    dispatch(updateResource({index, itembox}));
+    if (selectedIndex === null) {
+      return null;
+    } else {
+      const index = selectedIndex;
+      const _boxArray = [...resources];
+      const itembox = {
+        ..._boxArray[selectedIndex],
+        x: _boxArray[selectedIndex].x,
+        y: _boxArray[selectedIndex].y,
+        height: _boxArray[selectedIndex].height,
+        width: _boxArray[selectedIndex].width,
+        colorIcon: colorSelected,
+      };
+      dispatch(updateResource({index, itembox}));
+    }
   };
-
+  const navigation = useNavigation();
   return (
     <>
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView style={styles.container}>
           <View style={styles.viewTopTab}>
-            {
-              <FlatList
-                horizontal
-                data={FUNCTIONBUTTON}
-                keyExtractor={key => key.title}
-                renderItem={({item}) => renderButton(item)}
-              />
-            }
+            <FlatList
+              horizontal
+              data={FUNCTIONBUTTON}
+              keyExtractor={key => key.title}
+              renderItem={({item}) => renderButton(item)}
+            />
             <View style={{flex: 1}} />
-
             <TouchableOpacity style={styles.saveButton}>
               <Image
                 style={{width: 20, height: 20, tintColor: 'rgb(0,0,225)'}}
@@ -174,7 +164,7 @@ const BusinessCardDesign = () => {
               <ScrollView style={styles.viewItem}>
                 {Object.values(svgimages).map((IconItem, index) => (
                   <TouchableOpacity
-                    key={index}
+                    key={index + 1}
                     onPress={() => {
                       onAddNewItem(IconItem, index);
                     }}
@@ -195,137 +185,220 @@ const BusinessCardDesign = () => {
                 />
               </View>
             </View>
-            <View
-              onLayout={ev => {
-                const layout = ev.nativeEvent.layout;
-                setLimitationHeight(layout.height);
-                setLimitationWidth(layout.width);
-              }}
-              style={{flex: 1}}>
-              {resources.map(
-                (
-                  {
-                    width,
-                    height,
-                    type,
-                    x,
-                    y,
-                    value,
-                    color,
-                    fontfamily,
-                    fontsize,
-                    bold,
-                    italic,
-                    colorIcon,
-                    id,
-                  },
-                  index,
-                ) => {
-                  const IconItem = value;
-
-                  return (
-                    <View key={id}>
-                      {type === 'image' ? (
-                        <GestureBox
-                          setXY={item => {
-                            console.log(item, '123132123132');
-                          }}
-                          color={colorItem}
-                          index={index}
-                          isSelected={index === selectedIndex}
-                          limitationHeight={limitationHeight}
-                          limitationWidth={limitationWidth}
-                          onRemove={onRemove(id)}
-                          onResizeEnd={boxPosition => {
-                            const _boxArray = [...resources];
-                            const itembox = {
-                              ..._boxArray[index],
-                              x: x,
-                              y: y,
-                              height: boxPosition.height,
-                              width: boxPosition.width,
-                            };
-                            console.log(itembox, x, y, 'loggggggggg');
-                            setSize({
-                              width: boxPosition.width,
-                              height: boxPosition.height,
-                            });
-                            dispatch(updateResource({index, itembox}));
-                          }}>
-                          <TouchableWithoutFeedback
-                            // <TouchableOpacity
-                            style={[StyleSheet.absoluteFill]}
-                            onPress={onTogglePressed(index)}>
-                            <View
+            <View style={styles.viewBackgroundNameCard}>
+              <View
+                style={{
+                  backgroundColor: 'white',
+                  overflow: 'hidden',
+                  width: 300,
+                  height: 300,
+                }}
+                onLayout={ev => {
+                  const layout = ev.nativeEvent.layout;
+                  setLimitationHeight(layout.height);
+                  setLimitationWidth(layout.width);
+                }}>
+                {resources.map(
+                  (
+                    {
+                      width,
+                      height,
+                      type,
+                      x,
+                      y,
+                      value,
+                      fontfamily,
+                      fontsize,
+                      bold,
+                      italic,
+                      colorIcon,
+                      id,
+                      rotate,
+                    },
+                    index,
+                  ) => {
+                    const IconItem = value;
+                    return (
+                      <View key={id}>
+                        {type === 'image' ? (
+                          <PanAndPinch
+                            isSelected={index === selectedIndex}
+                            style={{
+                              borderWidth: index === selectedIndex ? 0.3 : 0,
+                              borderColor: 'grey',
+                            }}
+                            key={id}
+                            height={height}
+                            width={width}
+                            x={x}
+                            y={y}
+                            rotate={rotate}
+                            limitationHeight={limitationHeight}
+                            limitationWidth={limitationWidth}
+                            onRemove={onRemove(id)}
+                            onDragEnd={boxPosition => {
+                              const _boxArray = [...resources];
+                              const itembox = {
+                                ..._boxArray[index],
+                                x: boxPosition.x,
+                                y: boxPosition.y,
+                                height: boxPosition.height,
+                                width: boxPosition.width,
+                                rotate: (boxPosition.rotate * 180) / Math.PI,
+                                id: id,
+                              };
+                              dispatch(updateResource({index, itembox}));
+                            }}
+                            onResizeEnd={boxPosition => {
+                              const _boxArray = [...resources];
+                              const itembox = {
+                                ..._boxArray[index],
+                                x: boxPosition.x,
+                                y: boxPosition.y,
+                                height: boxPosition.height,
+                                width: boxPosition.width,
+                                rotate: (boxPosition.rotate * 180) / Math.PI,
+                                id: id,
+                              };
+                              setSize({
+                                width: boxPosition.width,
+                                height: boxPosition.width,
+                              }),
+                                dispatch(updateResource({index, itembox}));
+                            }}
+                            onRotateEnd={boxPosition => {
+                              const _boxArray = [...resources];
+                              const itembox = {
+                                ..._boxArray[index],
+                                x: boxPosition.x,
+                                y: boxPosition.y,
+                                height: boxPosition.height,
+                                width: boxPosition.width,
+                                rotate: (boxPosition.rotate * 180) / Math.PI,
+                                id: id,
+                              };
+                              dispatch(updateResource({index, itembox}));
+                            }}>
+                            <TouchableOpacity
+                              hitSlop={{x: size.width, y: size.height}}
+                              activeOpacity={1}
                               style={[
-                                {width: size.width, height: size.height},
-                              ]}>
-                              {typeof value === 'string' ? (
-                                <SvgUri
-                                  width="100%"
-                                  height="100%"
-                                  uri="http://thenewcode.com/assets/images/thumbnails/homer-simpson.svg"
-                                />
-                              ) : (
-                                <IconItem
-                                  fill={colorIcon}
-                                  width={resources[index].width - 4}
-                                  height={resources[index].height - 4}
-                                />
-                              )}
-                            </View>
-                            {/* </TouchableOpacity> */}
-                          </TouchableWithoutFeedback>
-                        </GestureBox>
-                      ) : type === 'text' ? (
-                        <GestureBox
-                          isSelected={index === selectedIndex}
-                          limitationHeight={limitationHeight}
-                          limitationWidth={limitationWidth}
-                          onRemove={onRemove(id)}
-                          onResizeEnd={boxPosition => {
-                            const _boxArray = [...resources];
-                            const itembox = {
-                              ..._boxArray[index],
-                              x: boxPosition.x,
-                              y: boxPosition.y,
-                              height: boxPosition.height,
-                              width: boxPosition.width,
-                            };
-                            setSize({
-                              width: boxPosition.width,
-                              height: boxPosition.height,
-                            });
-                            dispatch(updateResource({index, itembox}));
-                          }}>
-                          <TouchableWithoutFeedback
-                            style={[StyleSheet.absoluteFill]}
-                            onPress={onTogglePressed(index)}>
-                            <View
-                              style={[
-                                {width: size.width, height: size.height},
-                              ]}>
-                              <Text
-                                style={{
-                                  width: resources[index].width - 4,
-                                  height: resources[index].height - 4,
-                                  color: color,
-                                  fontFamily: fontfamily,
-                                  fontSize: fontsize,
-                                  fontStyle: italic ? 'italic' : 'normal',
-                                  fontWeight: bold ? 'bold' : 'normal',
+                                StyleSheet.absoluteFill,
+                                {zIndex: 99, elevation: 99},
+                              ]}
+                              onPress={onTogglePressed(index)}>
+                              <View
+                                style={() => {
+                                  return {
+                                    width: size.width,
+                                    height: size.height,
+                                  };
                                 }}>
-                                {value}
-                              </Text>
-                            </View>
-                          </TouchableWithoutFeedback>
-                        </GestureBox>
-                      ) : null}
-                    </View>
-                  );
-                },
-              )}
-              {/* <LogoPirate width={45} height={45} fill={'rgb(0,0,0)'} /> */}
+                                {typeof value === 'string' ? (
+                                  <SvgUri
+                                    width="100%"
+                                    height="100%"
+                                    uri="http://thenewcode.com/assets/images/thumbnails/homer-simpson.svg"
+                                  />
+                                ) : (
+                                  <IconItem
+                                    fill={colorIcon}
+                                    width={resources[index].width - 4}
+                                    height={resources[index].height - 4}
+                                  />
+                                )}
+                              </View>
+                            </TouchableOpacity>
+                          </PanAndPinch>
+                        ) : type === 'text' ? (
+                          <PanAndPinch
+                            isSelected={index === selectedIndex}
+                            style={{
+                              borderWidth: selectedIndex === index ? 0.3 : 0,
+                              borderColor: 'grey',
+                            }}
+                            key={id}
+                            height={height}
+                            width={width}
+                            x={x}
+                            y={y}
+                            rotate={rotate}
+                            limitationHeight={limitationHeight}
+                            limitationWidth={limitationWidth}
+                            onRemove={onRemove(id)}
+                            onDragEnd={boxPosition => {
+                              const _boxArray = [...resources];
+                              const _box = {
+                                ..._boxArray[index],
+                                x: boxPosition.x,
+                                y: boxPosition.y,
+                                height: boxPosition.height,
+                                width: boxPosition.width,
+                                rotate: (boxPosition.rotate * 180) / Math.PI,
+                                id: id,
+                              };
+                              dispatch(updateResource(index, _box));
+                            }}
+                            onResizeEnd={boxPosition => {
+                              const _boxArray = [...resources];
+                              const _box = {
+                                ..._boxArray[index],
+                                x: boxPosition.x,
+                                y: boxPosition.y,
+                                height: boxPosition.height,
+                                width: boxPosition.width,
+                                id: id,
+                              };
+                              setSize({
+                                width: boxPosition.width,
+                                height: boxPosition.width,
+                              });
+                              dispatch(updateResource(index, _box));
+                            }}
+                            onRotateEnd={boxPosition => {
+                              const _boxArray = [...resources];
+                              const itembox = {
+                                ..._boxArray[index],
+                                x: boxPosition.x,
+                                y: boxPosition.y,
+                                height: boxPosition.height,
+                                width: boxPosition.width,
+                                rotate: (boxPosition.rotate * 180) / Math.PI,
+                                id: id,
+                              };
+                              dispatch(updateResource({index, itembox}));
+                            }}>
+                            <TouchableOpacity
+                              activeOpacity={1}
+                              hitSlop={{x: size.width, y: size.height}}
+                              style={[StyleSheet.absoluteFill, {padding: 10}]}
+                              onPress={onTogglePressed(index)}>
+                              <View
+                                style={() => {
+                                  return {
+                                    width: size.width,
+                                    height: size.height,
+                                  };
+                                }}>
+                                <Text
+                                  style={{
+                                    color: colorIcon,
+                                    fontFamily: fontfamily,
+                                    fontSize: fontsize,
+                                    fontStyle: italic ? 'italic' : 'normal',
+                                    fontWeight: bold ? 'bold' : 'normal',
+                                  }}>
+                                  {value}
+                                </Text>
+                              </View>
+                            </TouchableOpacity>
+                          </PanAndPinch>
+                        ) : null}
+                      </View>
+                    );
+                  },
+                )}
+              </View>
             </View>
           </View>
         </KeyboardAvoidingView>
@@ -399,5 +472,13 @@ const styles = StyleSheet.create({
     zIndex: 9999,
     flexDirection: 'row',
   },
+  viewBackgroundNameCard: {
+    flex: 1,
+    backgroundColor: 'grey',
+    zIndex: 9999,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
-export default BusinessCardDesign;
+export default NameCard;
