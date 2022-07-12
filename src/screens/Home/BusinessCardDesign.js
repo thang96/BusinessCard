@@ -28,6 +28,7 @@ const NameCard = () => {
   const [size, setSize] = useState({width: 100, height: 100});
   const dispatch = useDispatch();
   const resources = useSelector(state => state.resource.resourceStore ?? []);
+  console.log(resources);
   const color = useSelector(state => state.color.colorStore ?? []);
   // useEffect(() => {
   //   LogBox.ignoreAllLogs();
@@ -371,7 +372,10 @@ const NameCard = () => {
                             <TouchableOpacity
                               activeOpacity={1}
                               hitSlop={{x: size.width, y: size.height}}
-                              style={[StyleSheet.absoluteFill, {padding: 10}]}
+                              style={[
+                                StyleSheet.absoluteFill,
+                                {zIndex: 99, elevation: 99},
+                              ]}
                               onPress={onTogglePressed(index)}>
                               <View
                                 style={() => {

@@ -83,7 +83,7 @@ const Splash = () => {
         ? 'StackLoginNavigation'
         : 'StackHomeNavigation',
     );
-  }, [isReady]);
+  }, [isReady, InfoUse]);
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground

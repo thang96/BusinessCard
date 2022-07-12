@@ -1,5 +1,4 @@
 import React from 'react';
-import {NameCard} from '../screens';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import ChooseTextinputStyles from '../components/ChooseTextinputStyles';
 import EditTextinputStyles from '../components/EditTextinputStyles';
@@ -47,13 +46,6 @@ const StackRegisterNavigation = () => {
         }}
         name="ChooseTextinputStyles"
         component={ChooseTextinputStyles}
-      />
-      <Stack.Screen
-        options={{
-          headerShown: false,
-        }}
-        name="NameCard"
-        component={NameCard}
       />
     </Stack.Navigator>
   );

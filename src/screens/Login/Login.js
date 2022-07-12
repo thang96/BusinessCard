@@ -16,6 +16,8 @@ import {
 import {colos, icons, images} from '../../constants';
 import {isValidEmail, isValidPassword} from '../../utilies/Validations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {updateUser} from '../../redux/features/userSlice';
+import {useDispatch} from 'react-redux';
 
 const Login = () => {
   const [usename, setUsename] = useState('');
@@ -23,6 +25,7 @@ const Login = () => {
   const [errUsename, setErrUsename] = useState('');
   const [errPassword, setErrPassword] = useState('');
   const [visibility, setVisibility] = useState(false);
+  const dispatch = useDispatch();
   useEffect(() => {
     isValidationOK();
   }, [usename, password]);
@@ -96,6 +99,7 @@ const Login = () => {
                 onPress={() => {
                   const use = {usename, password};
                   AsyncStorage.setItem('useInfo', JSON.stringify(use));
+                  dispatch(updateUser(use));
                 }}
                 disabled={isValidationOK() == true ? false : true}
                 style={[
