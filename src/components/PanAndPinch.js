@@ -116,12 +116,12 @@ function PanAndPinch(props) {
       }
       boxWidth.value = clamp(
         ctx.boxWidth + ev.translationX,
-        minWidth,
+        30,
         limitationWidth - boxX.value,
       );
       boxHeight.value = clamp(
         ctx.boxHeight + ev.translationY,
-        minHeight,
+        30,
         limitationHeight - boxY.value,
       );
     },
@@ -237,6 +237,7 @@ function PanAndPinch(props) {
                         {width: width, height: height},
                       ]}>
                       <TouchableOpacity
+                        hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
                         onPress={onRemove}
                         style={styless.close}>
                         <Image
@@ -249,7 +250,9 @@ function PanAndPinch(props) {
                   </View>
                 )}
                 {isSelected && (
-                  <PanGestureHandler onGestureEvent={resizeHandler}>
+                  <PanGestureHandler
+                    hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+                    onGestureEvent={resizeHandler}>
                     <Animated.View style={[styles.resizeBoxStyle]}>
                       <Image
                         source={resizerImageSource}
