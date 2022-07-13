@@ -11,7 +11,7 @@ import {
   KeyboardAvoidingView,
   LogBox,
 } from 'react-native';
-import {icons, svgimages} from '../../constants';
+import {icons, svgimages, svgvehicle} from '../../constants';
 import PanAndPinch from '../../components/PanAndPinch';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
@@ -20,73 +20,31 @@ import {
   removeResource,
   addResource,
 } from '../../redux/features/resourceSlice';
+import {updateListSvg} from '../../redux/features/listSvgSlice';
 import {uuid} from '../../utilies';
-const NameCard = () => {
+import {SafeAreaInsetsContext} from 'react-native-safe-area-context';
+const BusinessCardDesign = () => {
   const [limitationHeight, setLimitationHeight] = useState(0);
   const [limitationWidth, setLimitationWidth] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [size, setSize] = useState({width: 100, height: 100});
   const dispatch = useDispatch();
   const resources = useSelector(state => state.resource.resourceStore ?? []);
-  console.log(resources);
   const color = useSelector(state => state.color.colorStore ?? []);
-  // useEffect(() => {
-  //   LogBox.ignoreAllLogs();
-  // }, []);
-  const FUNCTIONBUTTON = [
-    {title: 'Choose theme', onPress: null},
-    {title: 'Add color', onPress: () => navigation.navigate('CreateColor')},
-    {
-      title: 'Add text',
-      onPress: () => navigation.navigate('ChooseTextinputStyles'),
-    },
-    {
-      title: 'Edit text',
-      onPress: () => {
-        resources.map(
-          (
-            {
-              bold,
-              colorIcon,
-              fontfamily,
-              fontsize,
-              height,
-              id,
-              italic,
-              rotate,
-              type,
-              value,
-              width,
-              x,
-              y,
-            },
-            index,
-          ) => {
-            if (index === selectedIndex && type === 'text') {
-              navigation.navigate('EditTextinputStyles', {
-                params: {
-                  bold: bold,
-                  colorIcon: colorIcon,
-                  fontfamily: fontfamily,
-                  fontsize: fontsize,
-                  height: height,
-                  id: id,
-                  italic: italic,
-                  rotate: rotate,
-                  type: type,
-                  value: value,
-                  width: width,
-                  x: x,
-                  y: y,
-                  index: index,
-                },
-              });
-            }
-          },
-        );
-      },
-    },
-  ];
+  const svg = useSelector(state => state.listSvg.svgStore ?? []);
+  const navigation = useNavigation();
+  const drawerNavigation = navigation.getParent('ChooseTheme');
+  const [sizeCard, setSizeCard] = useState({
+    width: 400,
+    height: 250,
+    type: 'rectangle',
+  });
+
+  useEffect(() => {
+    dispatch(updateListSvg(svgimages));
+    LogBox.ignoreAllLogs();
+  }, []);
+
   const renderColor = ({item, index}) => (
     <TouchableOpacity
       key={item.value}
@@ -118,11 +76,7 @@ const NameCard = () => {
       dispatch(removeResource(id));
     };
   };
-  const renderButton = item => (
-    <TouchableOpacity onPress={item.onPress} style={styles.buttonTopTab}>
-      <Text style={styles.textTopTab}>{item.title}</Text>
-    </TouchableOpacity>
-  );
+
   const updateColor = colorSelected => {
     if (selectedIndex === null) {
       return null;
@@ -140,18 +94,104 @@ const NameCard = () => {
       dispatch(updateResource({index, itembox}));
     }
   };
-  const navigation = useNavigation();
+  const editText = () => {
+    resources.map(
+      (
+        {
+          bold,
+          colorIcon,
+          fontfamily,
+          fontsize,
+          height,
+          id,
+          italic,
+          rotate,
+          type,
+          value,
+          width,
+          x,
+          y,
+        },
+        index,
+      ) => {
+        if (index === selectedIndex && type === 'text') {
+          navigation.navigate('EditTextinputStyles', {
+            params: {
+              bold: bold,
+              colorIcon: colorIcon,
+              fontfamily: fontfamily,
+              fontsize: fontsize,
+              height: height,
+              id: id,
+              italic: italic,
+              rotate: rotate,
+              type: type,
+              value: value,
+              width: width,
+              x: x,
+              y: y,
+              index: index,
+            },
+          });
+        }
+      },
+    );
+  };
+  const [typeCard, setTypeCard] = useState(false);
+  const changeSizeCard = () => {
+    const rectangleSize = {
+      width: 400,
+      height: 250,
+      type: 'rectangle',
+    };
+    const squareSize = {
+      width: 250,
+      height: 250,
+      type: 'square',
+    };
+    setTypeCard(typeCard ? false : true);
+    setSizeCard(typeCard ? rectangleSize : squareSize);
+  };
+
   return (
     <>
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView style={styles.container}>
           <View style={styles.viewTopTab}>
-            <FlatList
-              horizontal
-              data={FUNCTIONBUTTON}
-              keyExtractor={key => key.title}
-              renderItem={({item}) => renderButton(item)}
-            />
+            <TouchableOpacity
+              onPress={() => drawerNavigation?.toggleDrawer()}
+              style={styles.buttonTopTab}>
+              <Text style={styles.textTopTab}>Choose theme</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('ChooseTextinputStyles');
+              }}
+              style={styles.buttonText}>
+              <Image style={{width: 30, height: 30}} source={icons.text} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => editText()}
+              style={styles.buttonText}>
+              <Image style={{width: 30, height: 30}} source={icons.edittext} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => changeSizeCard()}
+              style={{
+                height: 45,
+                width: 50,
+                borderRadius: 5,
+                backgroundColor: 'rgba(248,248,255,0.5)',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Image
+                style={{width: 35, height: 35}}
+                source={typeCard ? icons.square : icons.rectangle}
+              />
+            </TouchableOpacity>
+
             <View style={{flex: 1}} />
             <TouchableOpacity style={styles.saveButton}>
               <Image
@@ -163,7 +203,7 @@ const NameCard = () => {
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={styles.listIcon}>
               <ScrollView style={styles.viewItem}>
-                {Object.values(svgimages).map((IconItem, index) => (
+                {Object.values(svg).map((IconItem, index) => (
                   <TouchableOpacity
                     key={index + 1}
                     onPress={() => {
@@ -191,8 +231,8 @@ const NameCard = () => {
                 style={{
                   backgroundColor: 'white',
                   overflow: 'hidden',
-                  width: 300,
-                  height: 300,
+                  width: sizeCard.width,
+                  height: sizeCard.height,
                 }}
                 onLayout={ev => {
                   const layout = ev.nativeEvent.layout;
@@ -418,6 +458,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(207,207,207)',
     flexDirection: 'row',
     alignItems: 'center',
+    paddingHorizontal: 10,
   },
   saveButton: {
     justifyContent: 'center',
@@ -430,17 +471,30 @@ const styles = StyleSheet.create({
   },
   buttonTopTab: {
     height: 45,
-    width: 150,
+    width: 130,
     marginRight: 15,
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 1,
+    borderWidth: 2,
+    backgroundColor: 'rgba(160,82,45,0.1)',
+    borderColor: 'rgb(160,82,45)',
   },
   textTopTab: {
     fontWeight: 'bold',
     fontSize: 16,
-    color: 'rgba(0,0,0,0.5)',
+    color: 'rgb(160,82,45)',
+  },
+  buttonText: {
+    height: 45,
+    width: 50,
+    marginRight: 15,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    backgroundColor: 'rgba(160,82,45,0.1)',
+    borderColor: 'rgb(160,82,45)',
   },
   viewItem: {
     backgroundColor: 'rgb(207,207,207)',
@@ -485,4 +539,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-export default NameCard;
+export default BusinessCardDesign;

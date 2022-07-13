@@ -5,12 +5,13 @@ import EditTextinputStyles from '../components/EditTextinputStyles';
 import CreateColor from '../components/CreateColor';
 import Svg from '../components/Svg';
 import BusinessCardDesign from '../screens/Home/BusinessCardDesign';
+import DrawerHomeNavigation from './DrawerHomeNavigation';
 
 const Stack = createNativeStackNavigator();
 
 const StackRegisterNavigation = () => {
   return (
-    <Stack.Navigator initialRouteName="BusinessCardDesign">
+    <Stack.Navigator initialRouteName="DrawerHomeNavigation">
       <Stack.Screen
         options={{
           headerShown: false,
@@ -18,12 +19,13 @@ const StackRegisterNavigation = () => {
         name="EditTextinputStyles"
         component={EditTextinputStyles}
       />
+
       <Stack.Screen
         options={{
           headerShown: false,
         }}
-        name="BusinessCardDesign"
-        component={BusinessCardDesign}
+        name="DrawerHomeNavigation"
+        component={DrawerHomeNavigation}
       />
 
       <Stack.Screen
