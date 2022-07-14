@@ -22,7 +22,6 @@ import {
 } from '../../redux/features/resourceSlice';
 import {updateListSvg} from '../../redux/features/listSvgSlice';
 import {uuid} from '../../utilies';
-import {SafeAreaInsetsContext} from 'react-native-safe-area-context';
 const BusinessCardDesign = () => {
   const [limitationHeight, setLimitationHeight] = useState(0);
   const [limitationWidth, setLimitationWidth] = useState(0);
@@ -35,8 +34,8 @@ const BusinessCardDesign = () => {
   const navigation = useNavigation();
   const drawerNavigation = navigation.getParent('ChooseTheme');
   const [sizeCard, setSizeCard] = useState({
-    width: 400,
-    height: 250,
+    width: 470,
+    height: 280,
     type: 'rectangle',
   });
 
@@ -140,13 +139,13 @@ const BusinessCardDesign = () => {
   const [typeCard, setTypeCard] = useState(false);
   const changeSizeCard = () => {
     const rectangleSize = {
-      width: 400,
-      height: 250,
+      width: 470,
+      height: 280,
       type: 'rectangle',
     };
     const squareSize = {
-      width: 250,
-      height: 250,
+      width: 300,
+      height: 300,
       type: 'square',
     };
     setTypeCard(typeCard ? false : true);
@@ -164,27 +163,50 @@ const BusinessCardDesign = () => {
               <Text style={styles.textTopTab}>Choose theme</Text>
             </TouchableOpacity>
             <TouchableOpacity
+              style={{height: 45, width: 50, marginRight: 15}}
+              onPress={() => {
+                navigation.navigate('CreateColor');
+              }}>
+              <Image source={icons.editColor} style={{height: 45, width: 45}} />
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => {
                 navigation.navigate('ChooseTextinputStyles');
               }}
               style={styles.buttonText}>
               <Image style={{width: 30, height: 30}} source={icons.text} />
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => editText()}
-              style={styles.buttonText}>
-              <Image style={{width: 30, height: 30}} source={icons.edittext} />
-            </TouchableOpacity>
 
+            {resources[selectedIndex]?.type === 'text' ? (
+              <TouchableOpacity
+                onPress={() => editText()}
+                style={styles.buttonText}>
+                <Image
+                  style={{width: 30, height: 30}}
+                  source={icons.edittext}
+                />
+              </TouchableOpacity>
+            ) : (
+              <View
+                style={{
+                  height: 45,
+                  width: 50,
+                  marginRight: 15,
+                }}
+              />
+            )}
+
+            <View style={{flex: 1}} />
             <TouchableOpacity
               onPress={() => changeSizeCard()}
               style={{
                 height: 45,
                 width: 50,
                 borderRadius: 5,
-                backgroundColor: 'rgba(248,248,255,0.5)',
+                backgroundColor: 'rgba(248,248,255,0.3)',
                 justifyContent: 'center',
                 alignItems: 'center',
+                marginRight: 5,
               }}>
               <Image
                 style={{width: 35, height: 35}}
@@ -192,7 +214,6 @@ const BusinessCardDesign = () => {
               />
             </TouchableOpacity>
 
-            <View style={{flex: 1}} />
             <TouchableOpacity style={styles.saveButton}>
               <Image
                 style={{width: 20, height: 20, tintColor: 'rgb(0,0,225)'}}
@@ -490,9 +511,9 @@ const styles = StyleSheet.create({
     width: 50,
     marginRight: 15,
     borderRadius: 5,
+    borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
     backgroundColor: 'rgba(160,82,45,0.1)',
     borderColor: 'rgb(160,82,45)',
   },

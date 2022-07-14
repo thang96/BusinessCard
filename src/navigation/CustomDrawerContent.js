@@ -63,25 +63,6 @@ const CustomDrawerContent = props => {
             },
           ]}
         />
-        <DrawerItem
-          label={({focused, color}) => (
-            <Text style={[styles.text, {color: 'rgb(0,191,255)'}]}>
-              Add color
-            </Text>
-          )}
-          icon={() => <Image source={icons.editColor} style={[styles.image]} />}
-          onPress={() => {
-            navigate.navigate('CreateColor');
-            props.navigation.toggleDrawer();
-          }}
-          style={[
-            styles.style,
-            {
-              borderColor: 'rgb(0,255,0)',
-              backgroundColor: ' rgba(0,255,0,0.1)',
-            },
-          ]}
-        />
       </Animated.View>
     </DrawerContentScrollView>
   );

@@ -212,8 +212,8 @@ function PanAndPinch(props) {
           transform: [{scale: 1}],
         },
         imageStyle: {
-          height: 20,
-          width: 20,
+          height: 25,
+          width: 25,
         },
       }),
     [],
@@ -227,12 +227,6 @@ function PanAndPinch(props) {
               <Animated.View style={[animatedStyle, style]}>
                 {isSelected && (
                   <View
-                    hitSlop={{
-                      top: height,
-                      bottom: height,
-                      left: width,
-                      right: width,
-                    }}
                     style={[
                       styles.closeBoxStyle,
                       {width: width, height: height},
@@ -243,6 +237,7 @@ function PanAndPinch(props) {
                         {width: width, height: height},
                       ]}>
                       <TouchableOpacity
+                        hitSlop={{top: 25, bottom: 25, left: 25, right: 25}}
                         onPress={onRemove}
                         style={styless.close}>
                         <Image
