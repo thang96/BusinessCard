@@ -207,13 +207,13 @@ function PanAndPinch(props) {
           position: 'absolute',
           zIndex: 20,
           elevation: 20,
-          right: -10,
-          bottom: -10,
+          right: -15,
+          bottom: -15,
           transform: [{scale: 1}],
         },
         imageStyle: {
-          height: 25,
-          width: 25,
+          height: 15,
+          width: 15,
         },
       }),
     [],
@@ -237,7 +237,7 @@ function PanAndPinch(props) {
                         {width: width, height: height},
                       ]}>
                       <TouchableOpacity
-                        hitSlop={{top: 25, bottom: 25, left: 25, right: 25}}
+                        hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}
                         onPress={onRemove}
                         style={styless.close}>
                         <Image
@@ -292,8 +292,8 @@ const styless = StyleSheet.create({
   },
   close: {
     position: 'absolute',
-    top: -10,
-    right: -5,
+    top: -15,
+    right: -10,
     zIndex: 10,
     elevation: 10,
   },

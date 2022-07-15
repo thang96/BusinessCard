@@ -4,4 +4,5 @@ import images from './images';
 import LogoPirate from '../assets/svgImages/LogoPirate.svg';
 import svgimages from './svgimages';
 import svgvehicle from './svgvehicle';
-export {icons, colos, images, LogoPirate, svgimages, svgvehicle};
+import svgweather from './svgweather';
+export {icons, colos, images, LogoPirate, svgimages, svgvehicle, svgweather};

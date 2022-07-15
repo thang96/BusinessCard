@@ -6,6 +6,7 @@ const Drawer = createDrawerNavigator();
 const DrawerHomeNavigation = () => {
   return (
     <Drawer.Navigator
+      edgeWidth={50}
       useLegacyImplementation
       drawerContent={props => <CustomDrawerContent {...props} />}
       id="ChooseTheme"

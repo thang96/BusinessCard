@@ -7,13 +7,19 @@ const initialState = {
   //   hasErrors: false,
 };
 export const listSvgSlice = createSlice({
-  name: 'svgStore',
+  name: 'svgStores',
   initialState,
   reducers: {
-    updateListSvg: (state, actions) => {
+    getListSvg: (state, actions) => {
       state.svgStore = actions.payload;
-      // state.user = [...current(state.user), actions.payload];
     },
+    loadMoreSvgImage: (state, actions) => {
+      const newStore = {...current(state.svgStore), ...actions.payload};
+      state.svgStore = newStore;
+
+      // state.svgStore = [...current(state.svgStore), actions.payload];
+    },
+
     // getPosts: state => {
     //   state.loading = true;
     // },
@@ -34,7 +40,7 @@ export const listSvgSlice = createSlice({
   },
 });
 
-export const {updateListSvg} = listSvgSlice.actions;
+export const {getListSvg, loadMoreSvgImage} = listSvgSlice.actions;
 
 export const svgStore = state => state.listSvg.svgStore;
 

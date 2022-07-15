@@ -9,9 +9,9 @@ import {
 } from '@react-navigation/drawer';
 import Animated from 'react-native-reanimated';
 import {icons} from '../constants';
-import {updateListSvg} from '../redux/features/listSvgSlice';
+import {getListSvg} from '../redux/features/listSvgSlice';
 import {useDispatch} from 'react-redux';
-import {svgimages, svgvehicle} from '../constants';
+import {svgimages, svgvehicle, svgweather} from '../constants';
 import {useNavigation} from '@react-navigation/native';
 const CustomDrawerContent = props => {
   const progress = useDrawerProgress();
@@ -33,7 +33,7 @@ const CustomDrawerContent = props => {
           )}
           icon={() => <Image source={icons.dog} style={styles.image} />}
           onPress={() => {
-            dispatch(updateListSvg(svgimages));
+            dispatch(getListSvg(svgimages));
             props.navigation.toggleDrawer();
           }}
           style={[
@@ -52,7 +52,7 @@ const CustomDrawerContent = props => {
           )}
           icon={() => <Image source={icons.vehicle} style={[styles.image]} />}
           onPress={() => {
-            dispatch(updateListSvg(svgvehicle));
+            dispatch(getListSvg(svgvehicle));
             props.navigation.toggleDrawer();
           }}
           style={[
@@ -60,6 +60,25 @@ const CustomDrawerContent = props => {
             {
               borderColor: 'rgb(0,191,255)',
               backgroundColor: ' rgba(0,191,255,0.1)',
+            },
+          ]}
+        />
+        <DrawerItem
+          label={({focused, color}) => (
+            <Text style={[styles.text, {color: 'rgb(0,191,255)'}]}>
+              Vehicle
+            </Text>
+          )}
+          icon={() => <Image source={icons.weather} style={[styles.image]} />}
+          onPress={() => {
+            dispatch(getListSvg(svgweather));
+            props.navigation.toggleDrawer();
+          }}
+          style={[
+            styles.style,
+            {
+              borderColor: 'rgb(202,225,255)',
+              backgroundColor: 'rgba(202,225,255,0.1)',
             },
           ]}
         />

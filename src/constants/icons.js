@@ -17,4 +17,5 @@ export default {
   unvisibility: require('../assets/icons/unvisibility.png'),
   vehicle: require('../assets/icons/vehicle.png'),
   savefile: require('../assets/icons/savefile.png'),
+  weather: require('../assets/icons/weather.png'),
 };
