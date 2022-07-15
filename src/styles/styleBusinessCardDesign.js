@@ -38,12 +38,6 @@ export default styles = StyleSheet.create({
     height: 45,
     width: 50,
     marginRight: 15,
-    borderRadius: 5,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(160,82,45,0.1)',
-    borderColor: 'rgb(160,82,45)',
   },
   viewItem: {
     backgroundColor: 'rgb(207,207,207)',
@@ -86,5 +80,10 @@ export default styles = StyleSheet.create({
     overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  hideView: {
+    height: 45,
+    width: 50,
+    marginRight: 15,
   },
 });

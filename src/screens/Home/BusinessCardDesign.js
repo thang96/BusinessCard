@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  startTransition,
-  useCallback,
-} from 'react';
+import React, {useEffect, useState, useRef, useCallback} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -30,7 +24,7 @@ import {
 import {getListSvg, loadMoreSvgImage} from '../../redux/features/listSvgSlice';
 import {uuid} from '../../utilies';
 import styles from '../../styles/styleBusinessCardDesign';
-import {renderColor} from '../../commons/handlerFunctionBusinessCardDesign';
+import CustomFunctionButton from '../../components/CustomFunctionButton';
 
 const BusinessCardDesign = () => {
   const [limitationHeight, setLimitationHeight] = useState(0);
@@ -39,12 +33,14 @@ const BusinessCardDesign = () => {
   const [size, setSize] = useState({width: 100, height: 100});
   const [numberPage, setNumberPage] = useState(1);
   // console.log(numberPage);
-  const dispatch = useDispatch();
   const resources = useSelector(state => state.resource.resourceStore ?? []);
   const color = useSelector(state => state.color.colorStore ?? []);
   const svg = useSelector(state => state.listSvg.svgStore ?? []);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const drawerNavigation = navigation.getParent('ChooseTheme');
+  const [refreshing, setRefreshing] = useState(false);
+  const [typeCard, setTypeCard] = useState(false);
   const [sizeCard, setSizeCard] = useState({
     width: 470,
     height: 280,
@@ -146,7 +142,7 @@ const BusinessCardDesign = () => {
       },
     );
   };
-  const [typeCard, setTypeCard] = useState(false);
+
   const changeSizeCard = () => {
     const rectangleSize = {
       width: 470,
@@ -161,8 +157,6 @@ const BusinessCardDesign = () => {
     setTypeCard(typeCard ? false : true);
     setSizeCard(typeCard ? rectangleSize : squareSize);
   };
-
-  const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -185,64 +179,55 @@ const BusinessCardDesign = () => {
               style={styles.buttonTopTab}>
               <Text style={styles.textTopTab}>Choose theme</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={{height: 45, width: 50, marginRight: 15}}
+            <CustomFunctionButton
+              size={45}
+              icon={icons.editColor}
               onPress={() => {
                 navigation.navigate('CreateColor');
-              }}>
-              <Image source={icons.editColor} style={{height: 45, width: 45}} />
-            </TouchableOpacity>
-            <TouchableOpacity
+              }}
+            />
+            <CustomFunctionButton
+              size={30}
+              styleButton={{
+                backgroundColor: 'rgba(160,82,45,0.1)',
+                borderColor: 'rgb(160,82,45)',
+                borderWidth: 2,
+              }}
+              icon={icons.text}
               onPress={() => {
                 navigation.navigate('ChooseTextinputStyles');
               }}
-              style={styles.buttonText}>
-              <Image style={{width: 30, height: 30}} source={icons.text} />
-            </TouchableOpacity>
-
+            />
             {resources[selectedIndex]?.type === 'text' ? (
-              <TouchableOpacity
-                onPress={() => editText()}
-                style={styles.buttonText}>
-                <Image
-                  style={{width: 30, height: 30}}
-                  source={icons.edittext}
-                />
-              </TouchableOpacity>
-            ) : (
-              <View
-                style={{
-                  height: 45,
-                  width: 50,
-                  marginRight: 15,
+              <CustomFunctionButton
+                size={30}
+                styleButton={{
+                  backgroundColor: 'rgba(160,82,45,0.1)',
+                  borderColor: 'rgb(160,82,45)',
+                  borderWidth: 2,
                 }}
+                icon={icons.edittext}
+                onPress={() => editText()}
               />
+            ) : (
+              <View style={styles.hideView} />
             )}
             <View style={{flex: 1}} />
-            <TouchableOpacity
-              disabled={resources.length <= 0 ? false : true}
-              onPress={() => changeSizeCard()}
-              style={{
-                height: 45,
-                width: 50,
-                borderRadius: 5,
+            <CustomFunctionButton
+              size={30}
+              styleButton={{
                 backgroundColor:
                   resources.length <= 0 ? 'rgba(248,248,255,0.3)' : 'red',
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginRight: 5,
-              }}>
-              <Image
-                style={{width: 35, height: 35}}
-                source={typeCard ? icons.square : icons.rectangle}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.saveButton}>
-              <Image
-                style={{width: 20, height: 20, tintColor: 'rgb(0,0,225)'}}
-                source={icons.savefile}
-              />
-            </TouchableOpacity>
+              }}
+              icon={typeCard ? icons.square : icons.rectangle}
+              onPress={() => changeSizeCard()}
+            />
+            <CustomFunctionButton
+              size={30}
+              styleIcon={{tintColor: 'rgb(0,0,225)'}}
+              icon={icons.savefile}
+              onPress={() => alert('Continue')}
+            />
           </View>
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={styles.listIcon}>
