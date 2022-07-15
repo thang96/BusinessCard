@@ -3,7 +3,6 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import ChooseTextinputStyles from '../components/ChooseTextinputStyles';
 import EditTextinputStyles from '../components/EditTextinputStyles';
 import CreateColor from '../components/CreateColor';
-import Svg from '../components/Svg';
 import BusinessCardDesign from '../screens/Home/BusinessCardDesign';
 import DrawerHomeNavigation from './DrawerHomeNavigation';
 
@@ -28,13 +27,6 @@ const StackRegisterNavigation = () => {
         component={DrawerHomeNavigation}
       />
 
-      <Stack.Screen
-        options={{
-          headerShown: false,
-        }}
-        name="Svg"
-        component={Svg}
-      />
       <Stack.Screen
         options={{
           headerShown: false,

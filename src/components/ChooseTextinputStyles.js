@@ -13,7 +13,6 @@ import {icons, colos} from '../constants';
 import Orientation from 'react-native-orientation-locker';
 import CustomButton from './CustomButton';
 import CustomInput from './CustomInput';
-import Picker from './Picker';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
 import {addResource} from '../redux/features/resourceSlice';

@@ -30,6 +30,8 @@ import {
 import {getListSvg, loadMoreSvgImage} from '../../redux/features/listSvgSlice';
 import {uuid} from '../../utilies';
 import styles from '../../styles/styleBusinessCardDesign';
+import {renderColor} from '../../commons/handlerFunctionBusinessCardDesign';
+
 const BusinessCardDesign = () => {
   const [limitationHeight, setLimitationHeight] = useState(0);
   const [limitationWidth, setLimitationWidth] = useState(0);
