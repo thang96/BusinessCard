@@ -32,7 +32,6 @@ const BusinessCardDesign = () => {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [size, setSize] = useState({width: 100, height: 100});
   const [numberPage, setNumberPage] = useState(1);
-  // console.log(numberPage);
   const resources = useSelector(state => state.resource.resourceStore ?? []);
   const color = useSelector(state => state.color.colorStore ?? []);
   const svg = useSelector(state => state.listSvg.svgStore ?? []);
@@ -232,6 +231,7 @@ const BusinessCardDesign = () => {
           <View style={{flex: 1, flexDirection: 'row'}}>
             <View style={styles.listIcon}>
               <ScrollView
+                style={styles.viewItem}
                 onScroll={({nativeEvent}) => {
                   if (isCloseToBottom(nativeEvent)) {
                     if (numberPage === 1) {
@@ -242,16 +242,6 @@ const BusinessCardDesign = () => {
                       dispatch(loadMoreSvgImage(svgweather));
                     }
                   }
-                  // if (isScrollToTop(nativeEvent)) {
-                  //   if (numberPage === 1) return;
-                  //   if (numberPage === 2) {
-                  //     setNumberPage(numberPage - 1);
-                  //     setNumberPage(getListSvg(svgimages));
-                  //   } else if (numberPage === 3) {
-                  //     setNumberPage(numberPage - 1);
-                  //     dispatch(getListSvg(svgvehicle));
-                  //   }
-                  // }
                 }}
                 scrollEventThrottle={400}
                 refreshControl={
@@ -259,8 +249,7 @@ const BusinessCardDesign = () => {
                     refreshing={refreshing}
                     onRefresh={onRefresh}
                   />
-                }
-                style={styles.viewItem}>
+                }>
                 {Object.values(svg).map((IconItem, index) => (
                   <TouchableOpacity
                     key={index + 1}
