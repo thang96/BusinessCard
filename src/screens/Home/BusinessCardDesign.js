@@ -6,7 +6,6 @@ import {
   Text,
   View,
   FlatList,
-  Image,
   TouchableOpacity,
   KeyboardAvoidingView,
   LogBox,
@@ -23,12 +22,10 @@ import {
 } from '../../redux/features/resourceSlice';
 import {getListSvg, loadMoreSvgImage} from '../../redux/features/listSvgSlice';
 import {uuid} from '../../utilies';
-import styles from '../../styles/styleBusinessCardDesign';
+import styles from '../../resource/styles/styleBusinessCardDesign';
 import CustomFunctionButton from '../../components/CustomFunctionButton';
 
 const BusinessCardDesign = () => {
-  const [limitationHeight, setLimitationHeight] = useState(0);
-  const [limitationWidth, setLimitationWidth] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [size, setSize] = useState({width: 100, height: 100});
   const [numberPage, setNumberPage] = useState(1);
@@ -39,10 +36,9 @@ const BusinessCardDesign = () => {
   const dispatch = useDispatch();
   const drawerNavigation = navigation.getParent('ChooseTheme');
   const [refreshing, setRefreshing] = useState(false);
-  const [typeCard, setTypeCard] = useState(false);
   const [sizeCard, setSizeCard] = useState({
-    width: 470,
-    height: 280,
+    width: 460,
+    height: 270,
     type: 'rectangle',
   });
   useEffect(() => {
@@ -153,8 +149,7 @@ const BusinessCardDesign = () => {
       height: 300,
       type: 'square',
     };
-    setTypeCard(typeCard ? false : true);
-    setSizeCard(typeCard ? rectangleSize : squareSize);
+    setSizeCard(sizeCard.type === 'rectangle' ? squareSize : rectangleSize);
   };
 
   const onRefresh = useCallback(() => {
@@ -213,12 +208,15 @@ const BusinessCardDesign = () => {
             )}
             <View style={{flex: 1}} />
             <CustomFunctionButton
+              disabled={resources.length <= 0 ? false : true}
               size={30}
               styleButton={{
                 backgroundColor:
                   resources.length <= 0 ? 'rgba(248,248,255,0.3)' : 'red',
               }}
-              icon={typeCard ? icons.square : icons.rectangle}
+              icon={
+                sizeCard.type === 'rectangle' ? icons.rectangle : icons.square
+              }
               onPress={() => changeSizeCard()}
             />
             <CustomFunctionButton
@@ -280,11 +278,6 @@ const BusinessCardDesign = () => {
                   overflow: 'hidden',
                   width: sizeCard.width,
                   height: sizeCard.height,
-                }}
-                onLayout={ev => {
-                  const layout = ev.nativeEvent.layout;
-                  setLimitationHeight(layout.height);
-                  setLimitationWidth(layout.width);
                 }}>
                 {resources.map(
                   (
@@ -321,8 +314,8 @@ const BusinessCardDesign = () => {
                             x={x}
                             y={y}
                             rotate={rotate}
-                            limitationHeight={limitationHeight}
-                            limitationWidth={limitationWidth}
+                            limitationHeight={sizeCard.height}
+                            limitationWidth={sizeCard.width}
                             onRemove={onRemove(id)}
                             onDragEnd={boxPosition => {
                               const _boxArray = [...resources];
@@ -411,8 +404,8 @@ const BusinessCardDesign = () => {
                             x={x}
                             y={y}
                             rotate={rotate}
-                            limitationHeight={limitationHeight}
-                            limitationWidth={limitationWidth}
+                            limitationHeight={sizeCard.height}
+                            limitationWidth={sizeCard.width}
                             onRemove={onRemove(id)}
                             onDragEnd={boxPosition => {
                               const _boxArray = [...resources];
