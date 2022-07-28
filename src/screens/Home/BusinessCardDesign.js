@@ -37,7 +37,7 @@ const BusinessCardDesign = () => {
   const drawerNavigation = navigation.getParent('ChooseTheme');
   const [refreshing, setRefreshing] = useState(false);
   const [sizeCard, setSizeCard] = useState({
-    width: 460,
+    width: 440,
     height: 270,
     type: 'rectangle',
   });
@@ -140,7 +140,7 @@ const BusinessCardDesign = () => {
 
   const changeSizeCard = () => {
     const rectangleSize = {
-      width: 470,
+      width: 440,
       height: 280,
       type: 'rectangle',
     };

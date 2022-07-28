@@ -16,6 +16,7 @@ const DrawerHomeNavigation = () => {
         component={BusinessCardDesign}
         options={{
           headerShown: false,
+          swipeEnabled: false,
         }}
       />
     </Drawer.Navigator>

@@ -65,8 +65,8 @@ const CustomDrawerContent = props => {
         />
         <DrawerItem
           label={({focused, color}) => (
-            <Text style={[styles.text, {color: 'rgb(0,191,255)'}]}>
-              Vehicle
+            <Text style={[styles.text, {color: 'rgb(202,225,255)'}]}>
+              Weather
             </Text>
           )}
           icon={() => <Image source={icons.weather} style={[styles.image]} />}
