@@ -1,13 +1,5 @@
 import React, {useEffect, useMemo, useRef} from 'react';
-import {
-  I18nManager,
-  Image,
-  ImageSourcePropType,
-  StyleSheet,
-  ViewStyle,
-  View,
-  TouchableOpacity,
-} from 'react-native';
+import {Image, StyleSheet, View, TouchableOpacity} from 'react-native';
 import {
   GestureHandlerRootView,
   PanGestureHandler,
@@ -20,12 +12,10 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-
 const clamp = (value, lowerBound, upperBound) => {
   'worklet';
   return Math.min(Math.max(lowerBound, value), upperBound);
 };
-
 function PanAndPinch(props) {
   const {
     x,
@@ -34,15 +24,12 @@ function PanAndPinch(props) {
     limitationWidth,
     height,
     width,
-    minHeight = height / 2,
-    minWidth = width / 2,
     onDragEnd,
     onResizeEnd,
     onRotateEnd,
     children,
     resizerImageSource = require('../assets/icons/resize.png'),
     closeImageSource = require('../assets/icons/close.png'),
-    rotateImageSource = require('../assets/icons/rotation.png'),
     style,
     isSelected,
     onRemove,
@@ -58,7 +45,6 @@ function PanAndPinch(props) {
   const boxWidth = useSharedValue(widthRef.current ?? 100);
   const rotation = useSharedValue(0);
   const savedRotation = useSharedValue(0);
-
   useEffect(() => {
     boxX.value = withTiming(xRef.current);
     boxY.value = withTiming(yRef.current);
@@ -66,7 +52,6 @@ function PanAndPinch(props) {
   useEffect(() => {
     savedRotation.value = (rotate * Math.PI) / 180;
   }, [rotate]);
-
   const gestureHandler = useAnimatedGestureHandler({
     onStart: (_ev, ctx) => {
       ctx.offsetX = boxX.value;
@@ -162,11 +147,9 @@ function PanAndPinch(props) {
           width: boxWidth.value,
           rotate: rotation.value,
         });
-        // console.log(rotation.value, 'rotate------');
       }
     },
   });
-
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       {
@@ -175,17 +158,13 @@ function PanAndPinch(props) {
       {
         translateY: boxY.value,
       },
-      // {rotate: `${(rotation.value * 180) / Math.PI}deg`},
       {rotateZ: `${rotation.value}rad`},
     ],
     height: boxHeight.value,
     width: boxWidth.value,
     position: 'absolute',
     flexDirection: 'row',
-    // borderWidth: !isSelected ? 0 : 1,
-    // borderColor: 'grey',
   }));
-
   const styles = useMemo(
     () =>
       StyleSheet.create({

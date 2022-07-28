@@ -12,10 +12,10 @@ import CustomButton from './CustomButton';
 import CustomInput from './CustomInput';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
-import {addNewColor} from '../redux/features/colorSlice';
 import fontfamily from '../constants/fontfamily';
 import CustomPicker from './CustomPicker';
 import {updateResource} from '../redux/features/resourceSlice';
+import styles from '../resource/styles/styleComponents/styleEditTextinputStyles';
 
 const FONT_SIZES = Array.from(new Array(62)).map((_, index) => ({
   label: index + 8,
@@ -212,141 +212,5 @@ const EditTextinputStyles = props => {
     </View>
   );
 };
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  eachContainer: {
-    backgroundColor: 'white',
-    width: '100%',
-    height: '100%',
-    alignSelf: 'center',
-    marginHorizontal: 10,
-    marginVertical: 10,
-  },
-  iconClose: {
-    width: 25,
-    height: 25,
-    position: 'absolute',
-    right: -10,
-    top: -10,
-  },
-  viewEdit: {
-    height: 40,
-    borderRadius: 15,
-    width: 150,
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: 20,
-    alignSelf: 'center',
-  },
-  viewInput: {
-    height: 95,
-    borderWidth: 2,
-    borderRadius: 15,
-    width: '80%',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: 70,
-    borderColor: 'rgb(0,255,255)',
-    alignSelf: 'center',
-    backgroundColor: 'rgba(0,0,0,0.1)',
-    justifyContent: 'center',
-  },
-  fontText: {
-    borderWidth: 2,
-    borderRadius: 10,
-    borderColor: 'rgb(0,255,255)',
-    width: '20%',
-  },
-  viewButton: {
-    height: 40,
-    borderWidth: 2,
-    borderRadius: 15,
-    width: 150,
-    borderColor: 'rgb(169 ,169 ,169)',
-    marginLeft: 10,
-    marginTop: 10,
-    backgroundColor: 'rgb(169 ,169 ,169)',
-  },
-  viewFlat: {
-    position: 'absolute',
-    width: '55%',
-    height: '45%',
-    borderColor: 'rgba(105,105,105,0.5)',
-    right: 30,
-    top: 10,
-    flexDirection: 'row',
-    borderWidth: 1,
-  },
-  viewFunction: {
-    width: '35%',
-    height: '45%',
-    borderColor: 'rgba(105,105,105,0.5)',
-    marginLeft: 30,
-    marginTop: 10,
-    borderWidth: 1,
-    flexDirection: 'column',
-  },
-  viewDropDown: {
-    height: 50,
-    width: '90%',
-    marginTop: 5,
-    marginLeft: 10,
-    alignItems: 'center',
-    flexDirection: 'row',
-    borderWidth: 1,
-    borderColor: 'rgb(112,112,112)',
-    borderRadius: 5,
-    justifyContent: 'space-between',
-    paddingHorizontal: 5,
-  },
-  viewPropDownRow: {
-    height: 50,
-    width: '90%',
-    marginTop: 9,
-    marginLeft: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  boldDropDow: {
-    height: 40,
-    width: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-
-    borderColor: 'grey',
-  },
-  color: {
-    width: 40,
-    height: 40,
-    margin: 2,
-    borderWidth: 1,
-    borderColor: 'grey',
-  },
-  textEditColor: {
-    fontSize: 14,
-    marginHorizontal: 10,
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  buttonEditColor: {
-    backgroundColor: 'rgba(125,146,125,3)',
-    height: 90,
-    marginHorizontal: 5,
-  },
-  toggleChoosingSize: {
-    height: 50,
-    borderWidth: 1,
-    borderColor: 'rgb(112,112,112)',
-    borderRadius: 5,
-    width: 110,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 5,
-  },
-});
 
 export default EditTextinputStyles;

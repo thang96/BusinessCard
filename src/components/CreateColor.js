@@ -7,6 +7,7 @@ import {useNavigation} from '@react-navigation/native';
 import CustomInput from './CustomInput';
 import {useDispatch, useSelector} from 'react-redux';
 import {addNewColor} from '../redux/features/colorSlice';
+import styles from '../resource/styles/styleComponents/styleCreateColor';
 const CreateColor = props => {
   const wheelStyle = {width: '60%', height: 250};
   const sliderStyle = {height: 40, width: '60%'};
@@ -80,44 +81,5 @@ const CreateColor = props => {
     </SafeAreaView>
   );
 };
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'rgba(0,255,255,0.5)',
-    flexDirection: 'row',
-  },
 
-  eachView: {
-    width: '50%',
-    height: '100%',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  eachView2: {
-    width: '50%',
-    height: '100%',
-    alignItems: 'center',
-  },
-  viewColor: {
-    width: 200,
-    height: 80,
-    marginTop: 70,
-    borderRadius: 20,
-    borderWidth: 0.5,
-    borderColor: 'rgba(0,0,0,0.5)',
-  },
-  textColor: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: 'rgba(0,0,0,0.8)',
-    marginTop: 10,
-  },
-  colorName: {
-    height: 50,
-    marginTop: 20,
-    width: 250,
-    backgroundColor: 'white',
-    borderRadius: 10,
-  },
-});
 export default CreateColor;

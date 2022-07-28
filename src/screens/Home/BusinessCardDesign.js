@@ -22,7 +22,7 @@ import {
 } from '../../redux/features/resourceSlice';
 import {getListSvg, loadMoreSvgImage} from '../../redux/features/listSvgSlice';
 import {uuid} from '../../utilies';
-import styles from '../../resource/styles/styleBusinessCardDesign';
+import styles from '../../resource/styles/styleScreens/styleBusinessCardDesign';
 import CustomFunctionButton from '../../components/CustomFunctionButton';
 
 const BusinessCardDesign = () => {
