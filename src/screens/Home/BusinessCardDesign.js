@@ -137,7 +137,6 @@ const BusinessCardDesign = () => {
       },
     );
   };
-
   const changeSizeCard = () => {
     const rectangleSize = {
       width: 440,
@@ -151,7 +150,6 @@ const BusinessCardDesign = () => {
     };
     setSizeCard(sizeCard.type === 'rectangle' ? squareSize : rectangleSize);
   };
-
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     try {
@@ -162,24 +160,35 @@ const BusinessCardDesign = () => {
       console.log(error);
     }
   }, []);
-
   return (
-    <>
-      <SafeAreaView style={styles.container}>
-        <KeyboardAvoidingView style={styles.container}>
-          <View style={styles.viewTopTab}>
-            <TouchableOpacity
-              onPress={() => drawerNavigation?.toggleDrawer()}
-              style={styles.buttonTopTab}>
-              <Text style={styles.textTopTab}>Choose theme</Text>
-            </TouchableOpacity>
-            <CustomFunctionButton
-              size={45}
-              icon={icons.editColor}
-              onPress={() => {
-                navigation.navigate('CreateColor');
-              }}
-            />
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView style={styles.container}>
+        <View style={styles.viewTopTab}>
+          <TouchableOpacity
+            onPress={() => drawerNavigation?.toggleDrawer()}
+            style={styles.buttonTopTab}>
+            <Text style={styles.textTopTab}>Choose theme</Text>
+          </TouchableOpacity>
+          <CustomFunctionButton
+            size={45}
+            icon={icons.editColor}
+            onPress={() => {
+              navigation.navigate('CreateColor');
+            }}
+          />
+          <CustomFunctionButton
+            size={30}
+            styleButton={{
+              backgroundColor: 'rgba(160,82,45,0.1)',
+              borderColor: 'rgb(160,82,45)',
+              borderWidth: 2,
+            }}
+            icon={icons.text}
+            onPress={() => {
+              navigation.navigate('ChooseTextinputStyles');
+            }}
+          />
+          {resources[selectedIndex]?.type === 'text' ? (
             <CustomFunctionButton
               size={30}
               styleButton={{
@@ -187,307 +196,286 @@ const BusinessCardDesign = () => {
                 borderColor: 'rgb(160,82,45)',
                 borderWidth: 2,
               }}
-              icon={icons.text}
-              onPress={() => {
-                navigation.navigate('ChooseTextinputStyles');
-              }}
+              icon={icons.edittext}
+              onPress={() => editText()}
             />
-            {resources[selectedIndex]?.type === 'text' ? (
-              <CustomFunctionButton
-                size={30}
-                styleButton={{
-                  backgroundColor: 'rgba(160,82,45,0.1)',
-                  borderColor: 'rgb(160,82,45)',
-                  borderWidth: 2,
-                }}
-                icon={icons.edittext}
-                onPress={() => editText()}
-              />
-            ) : (
-              <View style={styles.hideView} />
-            )}
-            <View style={{flex: 1}} />
-            <CustomFunctionButton
-              disabled={resources.length <= 0 ? false : true}
-              size={30}
-              styleButton={{
-                backgroundColor:
-                  resources.length <= 0 ? 'rgba(248,248,255,0.3)' : 'red',
-              }}
-              icon={
-                sizeCard.type === 'rectangle' ? icons.rectangle : icons.square
-              }
-              onPress={() => changeSizeCard()}
-            />
-            <CustomFunctionButton
-              size={30}
-              styleIcon={{tintColor: 'rgb(0,0,225)'}}
-              icon={icons.savefile}
-              onPress={() => alert('Continue')}
-            />
-          </View>
-          <View style={{flex: 1, flexDirection: 'row'}}>
-            <View style={styles.listIcon}>
-              <ScrollView
-                style={styles.viewItem}
-                onScroll={({nativeEvent}) => {
-                  if (isCloseToBottom(nativeEvent)) {
-                    if (numberPage === 1) {
-                      setNumberPage(2);
-                      dispatch(loadMoreSvgImage(svgvehicle));
-                    } else if (numberPage === 2) {
-                      setNumberPage(3);
-                      dispatch(loadMoreSvgImage(svgweather));
-                    }
+          ) : (
+            <View style={styles.hideView} />
+          )}
+          <View style={{flex: 1}} />
+          <CustomFunctionButton
+            disabled={resources.length <= 0 ? false : true}
+            size={30}
+            styleButton={{
+              backgroundColor:
+                resources.length <= 0 ? 'rgba(248,248,255,0.3)' : 'red',
+            }}
+            icon={
+              sizeCard.type === 'rectangle' ? icons.rectangle : icons.square
+            }
+            onPress={() => changeSizeCard()}
+          />
+          <CustomFunctionButton
+            size={30}
+            styleIcon={{tintColor: 'rgb(0,0,225)'}}
+            icon={icons.savefile}
+            onPress={() => alert('Continue')}
+          />
+        </View>
+        <View style={{flex: 1, flexDirection: 'row'}}>
+          <View style={styles.listIcon}>
+            <ScrollView
+              style={styles.viewItem}
+              onScroll={({nativeEvent}) => {
+                if (isCloseToBottom(nativeEvent)) {
+                  if (numberPage === 1) {
+                    setNumberPage(2);
+                    dispatch(loadMoreSvgImage(svgvehicle));
+                  } else if (numberPage === 2) {
+                    setNumberPage(3);
+                    dispatch(loadMoreSvgImage(svgweather));
                   }
-                }}
-                scrollEventThrottle={400}
-                refreshControl={
-                  <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                  />
-                }>
-                {Object.values(svg).map((IconItem, index) => (
-                  <TouchableOpacity
-                    key={index + 1}
-                    onPress={() => {
-                      onAddNewItem(IconItem, index);
-                    }}
-                    style={styles.eachViewItem}>
-                    <IconItem
-                      width={'100%'}
-                      height={'100%'}
-                      fill="rgb(0,0,0)"
-                    />
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-              <View style={styles.viewColor}>
-                <FlatList
-                  data={color}
-                  keyExtractor={key => key.name}
-                  renderItem={renderColor}
-                />
-              </View>
-            </View>
-            <View style={styles.viewBackgroundNameCard}>
-              <View
-                style={{
-                  backgroundColor: 'white',
-                  overflow: 'hidden',
-                  width: sizeCard.width,
-                  height: sizeCard.height,
-                }}>
-                {resources.map(
-                  (
-                    {
-                      width,
-                      height,
-                      type,
-                      x,
-                      y,
-                      value,
-                      fontfamily,
-                      fontsize,
-                      bold,
-                      italic,
-                      colorIcon,
-                      id,
-                      rotate,
-                    },
-                    index,
-                  ) => {
-                    const IconItem = value;
-                    return (
-                      <View key={id}>
-                        {type === 'image' ? (
-                          <PanAndPinch
-                            isSelected={index === selectedIndex}
-                            style={{
-                              borderWidth: index === selectedIndex ? 0.2 : 0,
-                              borderColor: 'black',
-                            }}
-                            key={id}
-                            height={height}
-                            width={width}
-                            x={x}
-                            y={y}
-                            rotate={rotate}
-                            limitationHeight={sizeCard.height}
-                            limitationWidth={sizeCard.width}
-                            onRemove={onRemove(id)}
-                            onDragEnd={boxPosition => {
-                              const _boxArray = [...resources];
-                              const itembox = {
-                                ..._boxArray[index],
-                                x: boxPosition.x,
-                                y: boxPosition.y,
-                                height: boxPosition.height,
-                                width: boxPosition.width,
-                                rotate: (boxPosition.rotate * 180) / Math.PI,
-                                id: id,
-                              };
-                              dispatch(updateResource({index, itembox}));
-                            }}
-                            onResizeEnd={boxPosition => {
-                              const _boxArray = [...resources];
-                              const itembox = {
-                                ..._boxArray[index],
-                                x: boxPosition.x,
-                                y: boxPosition.y,
-                                height: boxPosition.height,
-                                width: boxPosition.width,
-                                rotate: (boxPosition.rotate * 180) / Math.PI,
-                                id: id,
-                              };
-                              setSize({
-                                width: boxPosition.width,
-                                height: boxPosition.width,
-                              }),
-                                dispatch(updateResource({index, itembox}));
-                            }}
-                            onRotateEnd={boxPosition => {
-                              const _boxArray = [...resources];
-                              const itembox = {
-                                ..._boxArray[index],
-                                x: boxPosition.x,
-                                y: boxPosition.y,
-                                height: boxPosition.height,
-                                width: boxPosition.width,
-                                rotate: (boxPosition.rotate * 180) / Math.PI,
-                                id: id,
-                              };
-                              dispatch(updateResource({index, itembox}));
-                            }}>
-                            <TouchableOpacity
-                              hitSlop={{x: size.width, y: size.height}}
-                              activeOpacity={1}
-                              style={[
-                                StyleSheet.absoluteFill,
-                                {zIndex: 99, elevation: 99},
-                              ]}
-                              onPress={onTogglePressed(index)}>
-                              <View
-                                style={() => {
-                                  return {
-                                    width: size.width,
-                                    height: size.height,
-                                  };
-                                }}>
-                                {typeof value === 'string' ? (
-                                  <SvgUri
-                                    width="100%"
-                                    height="100%"
-                                    uri="http://thenewcode.com/assets/images/thumbnails/homer-simpson.svg"
-                                  />
-                                ) : (
-                                  <IconItem
-                                    fill={colorIcon}
-                                    width={resources[index].width - 4}
-                                    height={resources[index].height - 4}
-                                  />
-                                )}
-                              </View>
-                            </TouchableOpacity>
-                          </PanAndPinch>
-                        ) : type === 'text' ? (
-                          <PanAndPinch
-                            isSelected={index === selectedIndex}
-                            style={{
-                              borderWidth: selectedIndex === index ? 0.2 : 0,
-                              borderColor: 'black',
-                            }}
-                            key={id}
-                            height={height}
-                            width={width}
-                            x={x}
-                            y={y}
-                            rotate={rotate}
-                            limitationHeight={sizeCard.height}
-                            limitationWidth={sizeCard.width}
-                            onRemove={onRemove(id)}
-                            onDragEnd={boxPosition => {
-                              const _boxArray = [...resources];
-                              const _box = {
-                                ..._boxArray[index],
-                                x: boxPosition.x,
-                                y: boxPosition.y,
-                                height: boxPosition.height,
-                                width: boxPosition.width,
-                                rotate: (boxPosition.rotate * 180) / Math.PI,
-                                id: id,
-                              };
-                              dispatch(updateResource(index, _box));
-                            }}
-                            onResizeEnd={boxPosition => {
-                              const _boxArray = [...resources];
-                              const _box = {
-                                ..._boxArray[index],
-                                x: boxPosition.x,
-                                y: boxPosition.y,
-                                height: boxPosition.height,
-                                width: boxPosition.width,
-                                id: id,
-                              };
-                              setSize({
-                                width: boxPosition.width,
-                                height: boxPosition.width,
-                              });
-                              dispatch(updateResource(index, _box));
-                            }}
-                            onRotateEnd={boxPosition => {
-                              const _boxArray = [...resources];
-                              const itembox = {
-                                ..._boxArray[index],
-                                x: boxPosition.x,
-                                y: boxPosition.y,
-                                height: boxPosition.height,
-                                width: boxPosition.width,
-                                rotate: (boxPosition.rotate * 180) / Math.PI,
-                                id: id,
-                              };
-                              dispatch(updateResource({index, itembox}));
-                            }}>
-                            <TouchableOpacity
-                              activeOpacity={1}
-                              hitSlop={{x: size.width, y: size.height}}
-                              style={[
-                                StyleSheet.absoluteFill,
-                                {zIndex: 99, elevation: 99},
-                              ]}
-                              onPress={onTogglePressed(index)}>
-                              <View
-                                style={() => {
-                                  return {
-                                    width: size.width,
-                                    height: size.height,
-                                  };
-                                }}>
-                                <Text
-                                  style={{
-                                    color: colorIcon,
-                                    fontFamily: fontfamily,
-                                    fontSize: fontsize,
-                                    fontStyle: italic ? 'italic' : 'normal',
-                                    fontWeight: bold ? 'bold' : 'normal',
-                                  }}>
-                                  {value}
-                                </Text>
-                              </View>
-                            </TouchableOpacity>
-                          </PanAndPinch>
-                        ) : null}
-                      </View>
-                    );
-                  },
-                )}
-              </View>
+                }
+              }}
+              scrollEventThrottle={400}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }>
+              {Object.values(svg).map((IconItem, index) => (
+                <TouchableOpacity
+                  key={index + 1}
+                  onPress={() => {
+                    onAddNewItem(IconItem, index);
+                  }}
+                  style={styles.eachViewItem}>
+                  <IconItem width={'100%'} height={'100%'} fill="rgb(0,0,0)" />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <View style={styles.viewColor}>
+              <FlatList
+                data={color}
+                keyExtractor={key => key.name}
+                renderItem={renderColor}
+              />
             </View>
           </View>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </>
+          <View style={styles.viewBackgroundNameCard}>
+            <View
+              style={{
+                backgroundColor: 'white',
+                overflow: 'hidden',
+                width: sizeCard.width,
+                height: sizeCard.height,
+              }}>
+              {resources.map(
+                (
+                  {
+                    width,
+                    height,
+                    type,
+                    x,
+                    y,
+                    value,
+                    fontfamily,
+                    fontsize,
+                    bold,
+                    italic,
+                    colorIcon,
+                    id,
+                    rotate,
+                  },
+                  index,
+                ) => {
+                  const IconItem = value;
+                  return (
+                    <View key={id}>
+                      {type === 'image' ? (
+                        <PanAndPinch
+                          isSelected={index === selectedIndex}
+                          style={{
+                            borderWidth: index === selectedIndex ? 0.2 : 0,
+                            borderColor: 'black',
+                          }}
+                          key={id}
+                          height={height}
+                          width={width}
+                          x={x}
+                          y={y}
+                          rotate={rotate}
+                          limitationHeight={sizeCard.height}
+                          limitationWidth={sizeCard.width}
+                          onRemove={onRemove(id)}
+                          onDragEnd={boxPosition => {
+                            const _boxArray = [...resources];
+                            const itembox = {
+                              ..._boxArray[index],
+                              x: boxPosition.x,
+                              y: boxPosition.y,
+                              height: boxPosition.height,
+                              width: boxPosition.width,
+                              rotate: (boxPosition.rotate * 180) / Math.PI,
+                              id: id,
+                            };
+                            dispatch(updateResource({index, itembox}));
+                          }}
+                          onResizeEnd={boxPosition => {
+                            const _boxArray = [...resources];
+                            const itembox = {
+                              ..._boxArray[index],
+                              x: boxPosition.x,
+                              y: boxPosition.y,
+                              height: boxPosition.height,
+                              width: boxPosition.width,
+                              rotate: (boxPosition.rotate * 180) / Math.PI,
+                              id: id,
+                            };
+                            setSize({
+                              width: boxPosition.width,
+                              height: boxPosition.width,
+                            }),
+                              dispatch(updateResource({index, itembox}));
+                          }}
+                          onRotateEnd={boxPosition => {
+                            const _boxArray = [...resources];
+                            const itembox = {
+                              ..._boxArray[index],
+                              x: boxPosition.x,
+                              y: boxPosition.y,
+                              height: boxPosition.height,
+                              width: boxPosition.width,
+                              rotate: (boxPosition.rotate * 180) / Math.PI,
+                              id: id,
+                            };
+                            dispatch(updateResource({index, itembox}));
+                          }}>
+                          <TouchableOpacity
+                            hitSlop={{x: size.width, y: size.height}}
+                            activeOpacity={1}
+                            style={[
+                              StyleSheet.absoluteFill,
+                              {zIndex: 99, elevation: 99},
+                            ]}
+                            onPress={onTogglePressed(index)}>
+                            <View
+                              style={() => {
+                                return {
+                                  width: size.width,
+                                  height: size.height,
+                                };
+                              }}>
+                              {typeof value === 'string' ? (
+                                <SvgUri
+                                  width="100%"
+                                  height="100%"
+                                  uri="http://thenewcode.com/assets/images/thumbnails/homer-simpson.svg"
+                                />
+                              ) : (
+                                <IconItem
+                                  fill={colorIcon}
+                                  width={resources[index].width - 4}
+                                  height={resources[index].height - 4}
+                                />
+                              )}
+                            </View>
+                          </TouchableOpacity>
+                        </PanAndPinch>
+                      ) : type === 'text' ? (
+                        <PanAndPinch
+                          isSelected={index === selectedIndex}
+                          style={{
+                            borderWidth: selectedIndex === index ? 0.2 : 0,
+                            borderColor: 'black',
+                          }}
+                          key={id}
+                          height={height}
+                          width={width}
+                          x={x}
+                          y={y}
+                          rotate={rotate}
+                          limitationHeight={sizeCard.height}
+                          limitationWidth={sizeCard.width}
+                          onRemove={onRemove(id)}
+                          onDragEnd={boxPosition => {
+                            const _boxArray = [...resources];
+                            const _box = {
+                              ..._boxArray[index],
+                              x: boxPosition.x,
+                              y: boxPosition.y,
+                              height: boxPosition.height,
+                              width: boxPosition.width,
+                              rotate: (boxPosition.rotate * 180) / Math.PI,
+                              id: id,
+                            };
+                            dispatch(updateResource(index, _box));
+                          }}
+                          onResizeEnd={boxPosition => {
+                            const _boxArray = [...resources];
+                            const _box = {
+                              ..._boxArray[index],
+                              x: boxPosition.x,
+                              y: boxPosition.y,
+                              height: boxPosition.height,
+                              width: boxPosition.width,
+                              id: id,
+                            };
+                            setSize({
+                              width: boxPosition.width,
+                              height: boxPosition.width,
+                            });
+                            dispatch(updateResource(index, _box));
+                          }}
+                          onRotateEnd={boxPosition => {
+                            const _boxArray = [...resources];
+                            const itembox = {
+                              ..._boxArray[index],
+                              x: boxPosition.x,
+                              y: boxPosition.y,
+                              height: boxPosition.height,
+                              width: boxPosition.width,
+                              rotate: (boxPosition.rotate * 180) / Math.PI,
+                              id: id,
+                            };
+                            dispatch(updateResource({index, itembox}));
+                          }}>
+                          <TouchableOpacity
+                            activeOpacity={1}
+                            hitSlop={{x: size.width, y: size.height}}
+                            style={[
+                              StyleSheet.absoluteFill,
+                              {zIndex: 99, elevation: 99},
+                            ]}
+                            onPress={onTogglePressed(index)}>
+                            <View
+                              style={() => {
+                                return {
+                                  width: size.width,
+                                  height: size.height,
+                                };
+                              }}>
+                              <Text
+                                style={{
+                                  color: colorIcon,
+                                  fontFamily: fontfamily,
+                                  fontSize: fontsize,
+                                  fontStyle: italic ? 'italic' : 'normal',
+                                  fontWeight: bold ? 'bold' : 'normal',
+                                }}>
+                                {value}
+                              </Text>
+                            </View>
+                          </TouchableOpacity>
+                        </PanAndPinch>
+                      ) : null}
+                    </View>
+                  );
+                },
+              )}
+            </View>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 const isScrollToTop = ({layoutMeasurement, contentOffset, contentSize}) => {
