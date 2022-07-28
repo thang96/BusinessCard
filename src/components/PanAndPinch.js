@@ -198,57 +198,50 @@ function PanAndPinch(props) {
     [],
   );
   return (
-    <>
-      <GestureHandlerRootView>
-        <PanGestureHandler onGestureEvent={gestureHandler}>
-          <Animated.View>
-            <RotationGestureHandler onGestureEvent={rotateHandler}>
-              <Animated.View style={[animatedStyle, style]}>
-                {isSelected && (
-                  <View
-                    style={[
-                      styles.closeBoxStyle,
-                      {width: width, height: height},
-                    ]}>
-                    <View
-                      style={[
-                        styless.eachViewContainer,
-                        {width: width, height: height},
-                      ]}>
-                      <TouchableOpacity
-                        hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}
-                        onPress={onRemove}
-                        style={styless.close}>
-                        <Image
-                          source={closeImageSource}
-                          style={styles.imageStyle}
-                          resizeMode={'contain'}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                )}
-                {isSelected && (
-                  <PanGestureHandler
+    <PanGestureHandler onGestureEvent={gestureHandler}>
+      <Animated.View>
+        <RotationGestureHandler onGestureEvent={rotateHandler}>
+          <Animated.View style={[animatedStyle, style]}>
+            {isSelected && (
+              <View
+                style={[styles.closeBoxStyle, {width: width, height: height}]}>
+                <View
+                  style={[
+                    styless.eachViewContainer,
+                    {width: width, height: height},
+                  ]}>
+                  <TouchableOpacity
                     hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}
-                    onGestureEvent={resizeHandler}>
-                    <Animated.View style={[styles.resizeBoxStyle]}>
-                      <Image
-                        source={resizerImageSource}
-                        style={styles.imageStyle}
-                        resizeMode={'contain'}
-                      />
-                    </Animated.View>
-                  </PanGestureHandler>
-                )}
+                    onPress={onRemove}
+                    style={styless.close}>
+                    <Image
+                      source={closeImageSource}
+                      style={styles.imageStyle}
+                      resizeMode={'contain'}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+            {isSelected && (
+              <PanGestureHandler
+                hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}
+                onGestureEvent={resizeHandler}>
+                <Animated.View style={[styles.resizeBoxStyle]}>
+                  <Image
+                    source={resizerImageSource}
+                    style={styles.imageStyle}
+                    resizeMode={'contain'}
+                  />
+                </Animated.View>
+              </PanGestureHandler>
+            )}
 
-                {children}
-              </Animated.View>
-            </RotationGestureHandler>
+            {children}
           </Animated.View>
-        </PanGestureHandler>
-      </GestureHandlerRootView>
-    </>
+        </RotationGestureHandler>
+      </Animated.View>
+    </PanGestureHandler>
   );
 }
 const styless = StyleSheet.create({
